@@ -17,9 +17,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final _slides = const [
     _OnboardingSlide(
-      title: 'Mobilidade sustentável para sua empresa',
+      title: 'Mobilidade Sustentável',
       description:
-      'Reduza emissões de CO₂ com rotas inteligentes que conectam colaboradores e estimulam o ESG corporativo.',
+      'Reduza emissões de CO₂ e contribua para um planeta mais verde através de caronas compartilhadas.',
       asset: Icons.public,
       highlights: [
         'Menos carros nas ruas',
@@ -28,7 +28,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ],
     ),
     _OnboardingSlide(
-      title: 'Benefícios que engajam as equipes',
+      title: 'Benefícios Relevantes',
       description:
       'Compartilhe caronas, ganhe recompensas, vagas preferenciais e bônus exclusivos da sua empresa.',
       asset: Icons.card_giftcard,
@@ -39,7 +39,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ],
     ),
     _OnboardingSlide(
-      title: 'Segurança e confiança em cada trajeto',
+      title: 'Segurança Garantida',
       description:
       'Perfis verificados, avaliações após as viagens e suporte corporativo 24/7 criam um ambiente confiável.',
       asset: Icons.verified_user,
