@@ -133,15 +133,24 @@
       "streamingInterval": 0
     },
     {
+<<<<<<< Updated upstream
       "uuid": "b9f1b8c6-4c78-4e5c-826d-6ef0d7a33f0c",
+=======
+      "uuid": "33b74351-abc8-4101-a34a-485498cf6a44",
+>>>>>>> Stashed changes
       "type": "http",
       "documentation": "",
       "method": "get",
       "endpoint": "usuario/perfil",
       "responses": [
         {
+<<<<<<< Updated upstream
           "uuid": "62dcdff8-1469-4a77-9f0f-4d7d7925f00c",
           "body": "{\n  \"nome\": \"João da Silva\",\n  \"departamento\": \"Tecnologia da Informação\",\n  \"unidade\": \"Campinas – SP\",\n  \"preferenciasCarona\": {\n    \"aceitaConversas\": true,\n    \"aceitaMusica\": false,\n    \"aceitaPets\": true,\n    \"aceitaFumar\": false,\n    \"horarioPreferidoIda\": \"07:30\",\n    \"horarioPreferidoVolta\": \"17:45\"\n  }\n}",
+=======
+          "uuid": "59796ff4-82bb-4949-bf22-ef7a0d1856a0",
+          "body": "{\n  \"id\": 1,\n  \"nome\": \"João da Silva\",\n  \"departamento\": \"Tecnologia da Informação\",\n  \"unidade\": \"Campinas - SP\",\n  \"preferenciasCarona\": {\n    \"aceitaConversas\": true,\n    \"aceitaMusica\": false,\n    \"aceitaPets\": true,\n    \"aceitaFumar\": false,\n    \"horarioPreferidoIda\": \"07:30\",\n    \"horarioPreferidoVolta\": \"17:45\"\n  }\n}",
+>>>>>>> Stashed changes
           "latency": 0,
           "statusCode": 200,
           "label": "",
@@ -164,6 +173,7 @@
       "streamingInterval": 0
     },
     {
+<<<<<<< Updated upstream
       "uuid": "96d5a07d-4983-4bdd-88ce-57d6fb0ca1f3",
       "type": "http",
       "documentation": "",
@@ -173,6 +183,17 @@
         {
           "uuid": "d4af9646-45e6-4d42-8e2d-dc0899c5cbca",
           "body": "{\n  \"message\": \"Preferências atualizadas com sucesso\"\n}",
+=======
+      "uuid": "d2261602-846e-44c2-a331-abe045abaf4b",
+      "type": "http",
+      "documentation": "",
+      "method": "put",
+      "endpoint": "usuario/perfil/atualizar",
+      "responses": [
+        {
+          "uuid": "310721fd-b715-4f0c-8707-19b7fe8be783",
+          "body": "{\n  \"status\": \"sucesso\",\n  \"mensagem\": \"Preferências atualizadas com sucesso.\"\n}",
+>>>>>>> Stashed changes
           "latency": 0,
           "statusCode": 200,
           "label": "",
@@ -206,11 +227,19 @@
     },
     {
       "type": "route",
+<<<<<<< Updated upstream
       "uuid": "b9f1b8c6-4c78-4e5c-826d-6ef0d7a33f0c"
     },
     {
       "type": "route",
       "uuid": "96d5a07d-4983-4bdd-88ce-57d6fb0ca1f3"
+=======
+      "uuid": "33b74351-abc8-4101-a34a-485498cf6a44"
+    },
+    {
+      "type": "route",
+      "uuid": "d2261602-846e-44c2-a331-abe045abaf4b"
+>>>>>>> Stashed changes
     }
   ],
   "proxyMode": false,
