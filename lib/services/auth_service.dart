@@ -17,7 +17,7 @@ class AuthService {
         _baseUrl = baseUrl ??
             const String.fromEnvironment(
               'API_BASE_URL',
-              defaultValue: 'https://api.shareroute.dev',
+              defaultValue: 'http://localhost:3000',
             );
 
   final http.Client _client;
