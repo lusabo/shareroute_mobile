@@ -29,7 +29,7 @@
           "rules": [
             {
               "target": "body",
-              "modifier": "matricula",
+              "modifier": "registration",
               "value": "",
               "invert": true,
               "operator": "null"
@@ -56,7 +56,7 @@
           "rules": [
             {
               "target": "body",
-              "modifier": "matricula",
+              "modifier": "registration",
               "value": "",
               "invert": false,
               "operator": "null"
