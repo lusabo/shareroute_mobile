@@ -159,44 +159,54 @@ class _OnboardingSlide extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 16),
-        Center(
-          child: Container(
-            height: 240,
-            width: 240,
-            decoration: BoxDecoration(
-              color: AppColors.primaryBlue.withOpacity(.08),
-              borderRadius: BorderRadius.circular(32),
+    return LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            padding: const EdgeInsets.only(bottom: 24),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 16),
+                  Center(
+                    child: Container(
+                      height: 240,
+                      width: 240,
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryBlue.withOpacity(.08),
+                        borderRadius: BorderRadius.circular(32),
+                      ),
+                      child: Icon(asset, size: 128, color: AppColors.primaryBlue),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  Text(
+                    title,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    description,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: AppColors.lightSlate,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: highlights
+                        .map((item) => HighlightChip(icon: Icons.check_circle, label: item))
+                        .toList(),
+                  ),
+                ],
+              ),
             ),
-            child: Icon(asset, size: 128, color: AppColors.primaryBlue),
-          ),
-        ),
-        const SizedBox(height: 32),
-        Text(
-          title,
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          description,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            color: AppColors.lightSlate,
-          ),
-        ),
-        const SizedBox(height: 24),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: highlights
-              .map((item) => HighlightChip(icon: Icons.check_circle, label: item))
-              .toList(),
-        ),
-      ],
+          );
+        },
     );
   }
 }
