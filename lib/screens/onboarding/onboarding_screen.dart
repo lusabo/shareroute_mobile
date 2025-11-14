@@ -122,17 +122,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.pushReplacementNamed(
-                        context,
-                        AppRoutes.auth,
-                      ),
-                      child: const Text('Já tenho conta'),
-                    ),
-                  ),
                 ],
               ),
             ],
