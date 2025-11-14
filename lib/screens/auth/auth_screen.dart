@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../app_theme.dart';
 import '../../routes.dart';
+import '../../services/auth_service.dart';
+
+enum _AuthStage { requestCode, verifyCode }
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -10,8 +14,27 @@ class AuthScreen extends StatefulWidget {
   State<AuthScreen> createState() => _AuthScreenState();
 }
 
-class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateMixin {
-  late final TabController _controller = TabController(length: 2, vsync: this);
+class _AuthScreenState extends State<AuthScreen> {
+  final _requestFormKey = GlobalKey<FormState>();
+  final _verifyFormKey = GlobalKey<FormState>();
+  final TextEditingController _registrationController = TextEditingController();
+  final TextEditingController _codeController = TextEditingController();
+  final AuthService _authService = AuthService();
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+
+  _AuthStage _stage = _AuthStage.requestCode;
+  bool _isLoading = false;
+  String? _errorMessage;
+  String? _currentRegistration;
+
+  static const _tokenStorageKey = 'auth_token';
+
+  @override
+  void dispose() {
+    _registrationController.dispose();
+    _codeController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +47,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
             children: [
               const SizedBox(height: 12),
               Text(
-                'Entre na ShareRoute',
+                'Entre sem senha',
                 style: Theme.of(context)
                     .textTheme
                     .headlineSmall
@@ -32,42 +55,35 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
               ),
               const SizedBox(height: 8),
               Text(
-                'Conecte-se com seu time, compartilhe rotas e conquiste benefícios.',
+                'Use sua matrícula corporativa para receber um código de acesso seguro.',
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium
                     ?.copyWith(color: AppColors.lightSlate),
               ),
               const SizedBox(height: 24),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: const Color(0xFFD9E2FF)),
-                ),
-                child: TabBar(
-                  controller: _controller,
-                  indicator: BoxDecoration(
-                    color: AppColors.primaryBlue,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  labelColor: Colors.white,
-                  unselectedLabelColor: AppColors.lightSlate,
-                  tabs: const [
-                    Tab(text: 'Login'),
-                    Tab(text: 'Criar conta'),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
+              _buildErrorMessage(),
+              const SizedBox(height: 12),
               Expanded(
-                child: TabBarView(
-                  controller: _controller,
-                  children: const [
-                    _LoginForm(),
-                    _SignUpForm(),
-                  ],
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  child: _stage == _AuthStage.requestCode
+                      ? _RequestCodeForm(
+                          key: const ValueKey('request-stage'),
+                          isLoading: _isLoading,
+                          controller: _registrationController,
+                          formKey: _requestFormKey,
+                          onSubmit: _handleRequestCode,
+                        )
+                      : _VerifyCodeForm(
+                          key: const ValueKey('verify-stage'),
+                          isLoading: _isLoading,
+                          controller: _codeController,
+                          formKey: _verifyFormKey,
+                          registration: _currentRegistration ?? '',
+                          onSubmit: _handleVerifyCode,
+                          onBack: _backToRegistration,
+                        ),
                 ),
               ),
             ],
@@ -76,154 +92,304 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
       ),
     );
   }
+
+  Widget _buildErrorMessage() {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 200),
+      child: _errorMessage == null
+          ? const SizedBox.shrink()
+          : Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.red.withOpacity(.12),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.red.withOpacity(.24)),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.red),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      _errorMessage!,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: Colors.red),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
+
+  Future<void> _handleRequestCode() async {
+    if (_isLoading) return;
+    final formState = _requestFormKey.currentState;
+    if (formState == null || !formState.validate()) {
+      return;
+    }
+
+    FocusScope.of(context).unfocus();
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    final registration = _registrationController.text.trim();
+
+    try {
+      await _authService.requestCode(registration);
+      if (!mounted) return;
+      _codeController.clear();
+      setState(() {
+        _stage = _AuthStage.verifyCode;
+        _currentRegistration = registration;
+        _isLoading = false;
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Enviamos um código para o seu e-mail corporativo.'),
+        ),
+      );
+    } on AuthException catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _errorMessage = error.message;
+        _isLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _errorMessage =
+            'Não foi possível solicitar o código agora. Tente novamente.';
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _handleVerifyCode() async {
+    if (_isLoading) return;
+    final formState = _verifyFormKey.currentState;
+    if (formState == null || !formState.validate()) {
+      return;
+    }
+
+    FocusScope.of(context).unfocus();
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    final registration =
+        _currentRegistration ?? _registrationController.text.trim();
+    final code = _codeController.text.trim();
+
+    try {
+      final token = await _authService.verifyCode(
+        registration: registration,
+        code: code,
+      );
+      await _secureStorage.write(key: _tokenStorageKey, value: token);
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Autenticação realizada com sucesso!')),
+      );
+      Navigator.pushReplacementNamed(context, AppRoutes.profile);
+    } on AuthException catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _errorMessage = error.message;
+        _isLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _errorMessage = 'Não foi possível validar o código. Tente novamente.';
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _backToRegistration() {
+    if (_isLoading) {
+      return;
+    }
+    setState(() {
+      _stage = _AuthStage.requestCode;
+      _errorMessage = null;
+    });
+  }
 }
 
-class _LoginForm extends StatelessWidget {
-  const _LoginForm();
+class _RequestCodeForm extends StatelessWidget {
+  const _RequestCodeForm({
+    super.key,
+    required this.isLoading,
+    required this.controller,
+    required this.formKey,
+    required this.onSubmit,
+  });
+
+  final bool isLoading;
+  final TextEditingController controller;
+  final GlobalKey<FormState> formKey;
+  final VoidCallback onSubmit;
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'E-mail corporativo',
-              prefixIcon: Icon(Icons.email_outlined),
-            ),
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            obscureText: true,
-            decoration: const InputDecoration(
-              labelText: 'Senha',
-              prefixIcon: Icon(Icons.lock_outline),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: () {},
-              child: const Text('Esqueci minha senha'),
-            ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () => Navigator.pushReplacementNamed(
-                context,
-                AppRoutes.profile,
+      child: Form(
+        key: formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextFormField(
+              controller: controller,
+              decoration: const InputDecoration(
+                labelText: 'Matrícula',
+                hintText: 'Ex.: 123456',
+                prefixIcon: Icon(Icons.badge_outlined),
               ),
-              child: const Text('Entrar'),
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.done,
+              enabled: !isLoading,
+              validator: (value) {
+                final trimmed = value?.trim() ?? '';
+                if (trimmed.isEmpty) {
+                  return 'Informe sua matrícula corporativa';
+                }
+                if (!RegExp(r'^[0-9]{4,}$').hasMatch(trimmed)) {
+                  return 'Use apenas números válidos';
+                }
+                return null;
+              },
             ),
-          ),
-          const SizedBox(height: 16),
-          OutlinedButton.icon(
-            icon: const Icon(Icons.domain_verification_outlined),
-            onPressed: () => Navigator.pushReplacementNamed(
-              context,
-              AppRoutes.profile,
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: isLoading ? null : onSubmit,
+                child: isLoading
+                    ? const SizedBox(
+                        height: 22,
+                        width: 22,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Enviar código'),
+              ),
             ),
-            label: const Text('Entrar com SSO corporativo'),
-          ),
-          const SizedBox(height: 24),
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: const Color(0xFFE0E7FF)),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.accentGreen.withOpacity(.12),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Icon(Icons.security, color: AppColors.accentGreen),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    'Perfis verificados com aprovação da empresa garantem trajetos seguros.',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(color: AppColors.lightSlate),
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
-class _SignUpForm extends StatelessWidget {
-  const _SignUpForm();
+class _VerifyCodeForm extends StatelessWidget {
+  const _VerifyCodeForm({
+    super.key,
+    required this.isLoading,
+    required this.controller,
+    required this.formKey,
+    required this.registration,
+    required this.onSubmit,
+    required this.onBack,
+  });
+
+  final bool isLoading;
+  final TextEditingController controller;
+  final GlobalKey<FormState> formKey;
+  final String registration;
+  final VoidCallback onSubmit;
+  final VoidCallback onBack;
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'Nome completo',
-              prefixIcon: Icon(Icons.person_outline),
-            ),
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'E-mail corporativo',
-              prefixIcon: Icon(Icons.email_outlined),
-            ),
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            obscureText: true,
-            decoration: const InputDecoration(
-              labelText: 'Senha segura',
-              prefixIcon: Icon(Icons.lock_outline),
-            ),
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            obscureText: true,
-            decoration: const InputDecoration(
-              labelText: 'Confirmar senha',
-              prefixIcon: Icon(Icons.lock_outline),
-            ),
-          ),
-          const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () => Navigator.pushReplacementNamed(
-                context,
-                AppRoutes.profile,
+      child: Form(
+        key: formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.primaryBlue.withOpacity(.08),
+                borderRadius: BorderRadius.circular(16),
               ),
-              child: const Text('Avançar para o cadastro'),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Verifique o código',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Enviamos um código de 6 dígitos para o e-mail vinculado à matrícula $registration.',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: AppColors.lightSlate),
+                  ),
+                  TextButton(
+                    onPressed: isLoading ? null : onBack,
+                    child: const Text('Alterar matrícula'),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Ao continuar você concorda com os termos de uso e política de privacidade.',
-            textAlign: TextAlign.center,
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(color: AppColors.lightSlate),
-          ),
-        ],
+            const SizedBox(height: 24),
+            TextFormField(
+              controller: controller,
+              decoration: const InputDecoration(
+                labelText: 'Código de verificação',
+                hintText: '000000',
+                prefixIcon: Icon(Icons.shield_outlined),
+              ),
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.done,
+              enabled: !isLoading,
+              validator: (value) {
+                final trimmed = value?.trim() ?? '';
+                if (trimmed.isEmpty) {
+                  return 'Informe o código recebido por e-mail';
+                }
+                if (!RegExp(r'^[0-9]{6}$').hasMatch(trimmed)) {
+                  return 'O código deve ter 6 dígitos';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: isLoading ? null : onSubmit,
+                child: isLoading
+                    ? const SizedBox(
+                        height: 22,
+                        width: 22,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Entrar'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
