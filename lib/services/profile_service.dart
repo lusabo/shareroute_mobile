@@ -41,7 +41,7 @@ class ProfileService {
   }
 
   Future<void> updateRidePreferences(RidePreferences preferences) async {
-    final response = await _client.post(
+    final response = await _client.put(
       Uri.parse('$_baseUrl/usuario/perfil/atualizar'),
       headers: const {'Content-Type': 'application/json'},
       body: jsonEncode(preferences.toJson()),
