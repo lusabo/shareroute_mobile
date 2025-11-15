@@ -1,16 +1,36 @@
 # shareroute_mobile
 
-A new Flutter project.
+Aplicativo Flutter do projeto ShareRoute.
 
-## Getting Started
+## Pré-requisitos
 
-This project is a starting point for a Flutter application.
+- [Flutter](https://docs.flutter.dev/get-started/install)
+- [Android Studio](https://developer.android.com/studio)
+- [Mockoon](https://mockoon.com/)
 
-A few resources to get you started if this is your first Flutter project:
+## Clonar e abrir no Android Studio
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+1. Abra o **Android Studio**.
+2. Na tela inicial, clique em **Get from VCS**.
+3. Em **URL**, informe `https://github.com/<sua-organizacao>/shareroute_mobile.git` e selecione a pasta de destino.
+4. Clique em **Clone**. O Android Studio irá baixar o repositório e abrir o projeto Flutter automaticamente.
+5. Aguarde a sincronização do Gradle e a instalação das dependências do Flutter serem concluídas.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Configurar o Mockoon
+
+1. Instale o **Mockoon** e abra o aplicativo.
+2. No menu superior, clique em **File > Import environment**.
+3. Selecione o arquivo `mockoon.json` que está na raiz do repositório clonado.
+4. Após a importação, selecione o ambiente importado e clique em **Start** para iniciar o servidor mock.
+
+## Executar o aplicativo
+
+1. No Android Studio, selecione um dispositivo físico conectado ou um emulador Android.
+2. Certifique-se de que o ambiente do Mockoon está em execução.
+3. No Android Studio, clique em **Run > Run 'main.dart'** ou use o atalho **Shift + F10**.
+
+## Recursos adicionais
+
+- [Documentação oficial do Flutter](https://docs.flutter.dev/)
+- [Cookbook de exemplos Flutter](https://docs.flutter.dev/cookbook)
+- [Tutoriais "Lab" do Flutter](https://docs.flutter.dev/get-started/codelab)
