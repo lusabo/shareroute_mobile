@@ -77,6 +77,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     final preferences = profile.preferenciasCarona;
     final ida = _parseTime(preferences.horarioPreferidoIda);
     final volta = _parseTime(preferences.horarioPreferidoVolta);
+    final wantsToDrive = profile.formasUso.contains(ParticipationMode.driver);
+    final wantsToRide = profile.formasUso.contains(ParticipationMode.passenger);
 
     setState(() {
       _profile = profile;
@@ -88,6 +90,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       _horarioVolta = volta;
       _horarioIdaController.text = ida != null ? _formatTime(ida) : '';
       _horarioVoltaController.text = volta != null ? _formatTime(volta) : '';
+      isDriver = wantsToDrive;
+      isPassenger = wantsToRide || (!wantsToDrive && !wantsToRide);
       _isLoadingProfile = false;
     });
   }
@@ -147,6 +151,16 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       return;
     }
 
+    if (!isDriver && !isPassenger) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Selecione ao menos uma forma de uso do ShareRoute.'),
+        ),
+      );
+      return;
+    }
+
     final preferences = RidePreferences(
       aceitaConversas: _aceitaConversas,
       aceitaMusica: _aceitaMusica,
@@ -157,6 +171,11 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           _horarioVolta != null ? _formatTime(_horarioVolta!) : null,
     );
 
+    final formasUso = <ParticipationMode>[
+      if (isDriver) ParticipationMode.driver,
+      if (isPassenger) ParticipationMode.passenger,
+    ];
+
     setState(() {
       _isSaving = true;
     });
@@ -164,7 +183,10 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     var shouldNavigateToHome = false;
 
     try {
-      await _profileService.updateRidePreferences(preferences);
+      await _profileService.updateRidePreferences(
+        preferences,
+        formasUso: formasUso,
+      );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Preferências salvas com sucesso!')),

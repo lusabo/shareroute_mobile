@@ -40,11 +40,17 @@ class ProfileService {
     throw ProfileException(_resolveErrorMessage(response));
   }
 
-  Future<void> updateRidePreferences(RidePreferences preferences) async {
+  Future<void> updateRidePreferences(
+    RidePreferences preferences, {
+    required List<ParticipationMode> formasUso,
+  }) async {
     final response = await _client.put(
       Uri.parse('$_baseUrl/usuario/perfil/atualizar'),
       headers: const {'Content-Type': 'application/json'},
-      body: jsonEncode(preferences.toJson()),
+      body: jsonEncode({
+        'preferenciasCarona': preferences.toJson(),
+        'formasUso': formasUso.map(participationModeToJson).toList(),
+      }),
     );
 
     if (response.statusCode >= 200 && response.statusCode < 300) {

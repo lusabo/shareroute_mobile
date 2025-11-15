@@ -1,12 +1,58 @@
 import 'package:flutter/material.dart';
 
 import '../../app_theme.dart';
+import '../../models/user_profile.dart';
 import '../../routes.dart';
-import '../../widgets/highlight_chip.dart';
+import '../../services/profile_service.dart';
 import '../../widgets/section_header.dart';
 
-class RoleSelectionScreen extends StatelessWidget {
+class RoleSelectionScreen extends StatefulWidget {
   const RoleSelectionScreen({super.key});
+
+  @override
+  State<RoleSelectionScreen> createState() => _RoleSelectionScreenState();
+}
+
+class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
+  late final ProfileService _profileService;
+  bool _isLoading = true;
+  String? _error;
+  UserProfile? _profile;
+
+  @override
+  void initState() {
+    super.initState();
+    _profileService = ProfileService();
+    _fetchProfile();
+  }
+
+  Future<void> _fetchProfile() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final profile = await _profileService.fetchUserProfile();
+      if (!mounted) return;
+      setState(() {
+        _profile = profile;
+        _isLoading = false;
+      });
+    } on ProfileException catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _error = error.message;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _error = 'Não foi possível carregar os dados. Tente novamente.';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,132 +68,202 @@ class RoleSelectionScreen extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: Padding(
           padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Transforme sua mobilidade corporativa',
-                                style: theme.textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                'Compartilhe rotas, desbloqueie benefícios ESG e crie conexões com o time.',
-                                style: theme.textTheme.bodyMedium
-                                    ?.copyWith(color: AppColors.lightSlate),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Container(
-                          height: 80,
-                          width: 80,
-                          decoration: BoxDecoration(
-                            color: AppColors.primaryBlue.withOpacity(.08),
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                          child: const Icon(Icons.eco_outlined, color: AppColors.primaryBlue, size: 40),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: const [
-                        HighlightChip(icon: Icons.leaderboard, label: 'Impacto ESG mensurável'),
-                        HighlightChip(icon: Icons.card_giftcard, label: 'Recompensas corporativas'),
-                        HighlightChip(icon: Icons.lock_outline, label: 'Segurança e verificação'),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 32),
-              const SectionHeader(
-                title: 'Escolha como quer participar hoje',
-                subtitle: 'Você pode alternar entre motorista e passageiro quando quiser.',
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: _RoleCard(
-                      title: 'Sou motorista',
-                      description:
-                      'Crie rotas, aprove vagas disponíveis e acompanhe solicitações em tempo real.',
-                      icon: Icons.directions_car_filled,
-                      color: AppColors.primaryBlue,
-                      onTap: () => Navigator.pushNamed(context, AppRoutes.driverRoutes),
-                      quickActions: [
-                        _QuickAction(
-                          icon: Icons.add_circle_outline,
-                          label: 'Criar rota',
-                          onPressed: () => Navigator.pushNamed(context, AppRoutes.driverRoutes),
-                        ),
-                        _QuickAction(
-                          icon: Icons.mark_chat_unread_outlined,
-                          label: 'Ver solicitações',
-                          onPressed: () => Navigator.pushNamed(context, AppRoutes.driverRequests),
-                        ),
-                        _QuickAction(
-                          icon: Icons.directions_car_filled_outlined,
-                          label: 'Carona ativa',
-                          onPressed: () => Navigator.pushNamed(context, AppRoutes.driverActiveRide),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _RoleCard(
-                      title: 'Sou passageiro',
-                      description:
-                      'Encontre motoristas, acompanhe aprovação e mantenha contato com o time.',
-                      icon: Icons.emoji_people_outlined,
-                      color: AppColors.accentGreen,
-                      onTap: () => Navigator.pushNamed(context, AppRoutes.passengerSearch),
-                      quickActions: [
-                        _QuickAction(
-                          icon: Icons.search,
-                          label: 'Buscar carona',
-                          onPressed: () => Navigator.pushNamed(context, AppRoutes.passengerSearch),
-                        ),
-                        _QuickAction(
-                          icon: Icons.check_circle_outline,
-                          label: 'Ver carona aprovada',
-                          onPressed: () => Navigator.pushNamed(context, AppRoutes.passengerApproved),
-                        ),
-                        _QuickAction(
-                          icon: Icons.star_border,
-                          label: 'Avaliar motorista',
-                          onPressed: () => Navigator.pushNamed(context, AppRoutes.passengerReview),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+          child: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _error != null
+                  ? _ErrorState(message: _error!, onRetry: _fetchProfile)
+                  : _buildContent(),
         ),
+      ),
+    );
+  }
+
+  Widget _buildContent() {
+    final profile = _profile;
+    if (profile == null) {
+      return const SizedBox.shrink();
+    }
+
+    final roleCards = _buildRoleCards(profile);
+
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SectionHeader(
+            title: 'Escolha como quer participar hoje',
+            subtitle: 'Suas opções refletem as preferências salvas no perfil.',
+          ),
+          const SizedBox(height: 16),
+          if (roleCards.isEmpty)
+            _EmptyRolesState(onNavigateToProfile: () {
+              Navigator.pushNamed(context, AppRoutes.profile);
+            })
+          else
+            ...List.generate(
+              roleCards.length,
+              (index) => Padding(
+                padding: EdgeInsets.only(
+                  bottom: index == roleCards.length - 1 ? 0 : 16,
+                ),
+                child: roleCards[index],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildRoleCards(UserProfile profile) {
+    final modes = profile.formasUso.toSet();
+    final cards = <Widget>[];
+
+    if (modes.contains(ParticipationMode.driver)) {
+      cards.add(
+        _RoleCard(
+          title: 'Sou motorista',
+          description:
+              'Crie rotas, aprove vagas disponíveis e acompanhe solicitações em tempo real.',
+          icon: Icons.directions_car_filled,
+          color: AppColors.primaryBlue,
+          onTap: () => Navigator.pushNamed(context, AppRoutes.driverRoutes),
+          quickActions: [
+            _QuickAction(
+              icon: Icons.add_circle_outline,
+              label: 'Criar rota',
+              onPressed: () => Navigator.pushNamed(context, AppRoutes.driverRoutes),
+            ),
+            _QuickAction(
+              icon: Icons.mark_chat_unread_outlined,
+              label: 'Ver solicitações',
+              onPressed: () => Navigator.pushNamed(context, AppRoutes.driverRequests),
+            ),
+            _QuickAction(
+              icon: Icons.directions_car_filled_outlined,
+              label: 'Carona ativa',
+              onPressed: () => Navigator.pushNamed(context, AppRoutes.driverActiveRide),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (modes.contains(ParticipationMode.passenger)) {
+      cards.add(
+        _RoleCard(
+          title: 'Sou passageiro',
+          description:
+              'Encontre motoristas, acompanhe aprovação e mantenha contato com o time.',
+          icon: Icons.emoji_people_outlined,
+          color: AppColors.accentGreen,
+          onTap: () => Navigator.pushNamed(context, AppRoutes.passengerSearch),
+          quickActions: [
+            _QuickAction(
+              icon: Icons.search,
+              label: 'Buscar carona',
+              onPressed: () => Navigator.pushNamed(context, AppRoutes.passengerSearch),
+            ),
+            _QuickAction(
+              icon: Icons.check_circle_outline,
+              label: 'Ver carona aprovada',
+              onPressed: () => Navigator.pushNamed(context, AppRoutes.passengerApproved),
+            ),
+            _QuickAction(
+              icon: Icons.star_border,
+              label: 'Avaliar motorista',
+              onPressed: () => Navigator.pushNamed(context, AppRoutes.passengerReview),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return cards
+        .map(
+          (card) => SizedBox(
+            width: double.infinity,
+            child: card,
+          ),
+        )
+        .toList();
+  }
+}
+
+class _EmptyRolesState extends StatelessWidget {
+  const _EmptyRolesState({required this.onNavigateToProfile});
+
+  final VoidCallback onNavigateToProfile;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: const Color(0xFFE0E7FF)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Atualize suas preferências',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Escolha no perfil se deseja participar como motorista, passageiro ou ambos.',
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.lightSlate),
+          ),
+          const SizedBox(height: 16),
+          OutlinedButton.icon(
+            onPressed: onNavigateToProfile,
+            icon: const Icon(Icons.person_outline),
+            label: const Text('Ir para o perfil'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ErrorState extends StatelessWidget {
+  const _ErrorState({
+    required this.message,
+    required this.onRetry,
+  });
+
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.error_outline, color: theme.colorScheme.error, size: 48),
+          const SizedBox(height: 16),
+          Text(
+            message,
+            style: theme.textTheme.bodyLarge,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: onRetry,
+            child: const Text('Tentar novamente'),
+          ),
+        ],
       ),
     );
   }
