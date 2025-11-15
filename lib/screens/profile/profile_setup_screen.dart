@@ -161,12 +161,15 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       _isSaving = true;
     });
 
+    var shouldNavigateToHome = false;
+
     try {
       await _profileService.updateRidePreferences(preferences);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Preferências salvas com sucesso!')),
       );
+      shouldNavigateToHome = true;
     } on ProfileException catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -181,10 +184,17 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         ),
       );
     } finally {
-      if (mounted) {
-        setState(() {
-          _isSaving = false;
-        });
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _isSaving = false;
+      });
+
+      if (shouldNavigateToHome) {
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil(AppRoutes.home, (route) => false);
       }
     }
   }
