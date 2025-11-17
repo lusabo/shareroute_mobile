@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../app_theme.dart';
 import '../../models/driver_active_ride.dart';
 import '../../models/ride_direction.dart';
+import '../../models/user_profile.dart';
 import '../../services/driver_active_ride_service.dart';
+import '../../services/google_maps_route_launcher.dart';
+import '../../services/profile_service.dart';
 import '../../widgets/section_header.dart';
 
 class DriverActiveRideScreen extends StatefulWidget {
@@ -16,13 +20,22 @@ class DriverActiveRideScreen extends StatefulWidget {
 
 class _DriverActiveRideScreenState extends State<DriverActiveRideScreen> {
   late final DriverActiveRideService _service;
+  late final ProfileService _profileService;
+  final GoogleMapsRouteLauncher _mapsRouteLauncher =
+      const GoogleMapsRouteLauncher();
   late Future<DriverActiveRide> _activeRideFuture;
+  UserProfile? _profile;
+  bool _isLoadingProfile = true;
+  bool _isOpeningRoute = false;
+  String? _profileError;
 
   @override
   void initState() {
     super.initState();
     _service = DriverActiveRideService();
+    _profileService = ProfileService();
     _activeRideFuture = _service.fetchActiveRide();
+    _loadProfile();
   }
 
   Future<void> _refreshRide() {
@@ -30,6 +43,34 @@ class _DriverActiveRideScreenState extends State<DriverActiveRideScreen> {
       _activeRideFuture = _service.fetchActiveRide();
     });
     return _activeRideFuture;
+  }
+
+  Future<void> _loadProfile() async {
+    setState(() {
+      _isLoadingProfile = true;
+      _profileError = null;
+    });
+
+    try {
+      final profile = await _profileService.fetchUserProfile();
+      if (!mounted) return;
+      setState(() {
+        _profile = profile;
+        _isLoadingProfile = false;
+      });
+    } on ProfileException catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _profileError = error.message;
+        _isLoadingProfile = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _profileError = 'Não foi possível carregar seus endereços.';
+        _isLoadingProfile = false;
+      });
+    }
   }
 
   Future<void> _openMapsLink(String url) async {
@@ -61,6 +102,43 @@ class _DriverActiveRideScreenState extends State<DriverActiveRideScreen> {
       ),
       builder: (_) => PassengerChatModal(passenger: passenger),
     );
+  }
+
+  Future<void> _openDriverRoute(DriverActiveRide ride) async {
+    final profile = _profile;
+    if (profile == null) {
+      _showSnackBar('Estamos carregando seus endereços. Tente novamente.');
+      return;
+    }
+
+    final origin = profile.homeAddress.trim();
+    final destination = profile.workAddress.trim();
+    if (origin.isEmpty || destination.isEmpty) {
+      _showSnackBar('Atualize seus endereços para montar a rota.');
+      return;
+    }
+
+    setState(() {
+      _isOpeningRoute = true;
+    });
+
+    try {
+      await _mapsRouteLauncher.openRoute(
+        origin: origin,
+        destination: destination,
+        waypoints: ride.passengers.map((p) => p.address).toList(),
+      );
+    } on PlatformException catch (error) {
+      _showSnackBar(error.message ?? 'Falha ao abrir o Google Maps.');
+    } catch (_) {
+      _showSnackBar('Falha ao abrir o Google Maps.');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isOpeningRoute = false;
+        });
+      }
+    }
   }
 
   @override
@@ -116,6 +194,15 @@ class _DriverActiveRideScreenState extends State<DriverActiveRideScreen> {
                           _RideDirectionCard(
                             direction: ride.direction,
                             passengerCount: ride.passengers.length,
+                          ),
+                          const SizedBox(height: 16),
+                          _RoutePlannerCard(
+                            origin: _profile?.homeAddress,
+                            destination: _profile?.workAddress,
+                            isLoadingProfile: _isLoadingProfile,
+                            isOpeningRoute: _isOpeningRoute,
+                            errorMessage: _profileError,
+                            onOpenRoute: () => _openDriverRoute(ride),
                           ),
                           const SizedBox(height: 24),
                           const SectionHeader(
@@ -287,6 +374,164 @@ class _PassengerTile extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _RoutePlannerCard extends StatelessWidget {
+  const _RoutePlannerCard({
+    required this.origin,
+    required this.destination,
+    required this.isLoadingProfile,
+    required this.isOpeningRoute,
+    required this.errorMessage,
+    required this.onOpenRoute,
+  });
+
+  final String? origin;
+  final String? destination;
+  final bool isLoadingProfile;
+  final bool isOpeningRoute;
+  final String? errorMessage;
+  final VoidCallback onOpenRoute;
+
+  bool get _hasValidAddresses =>
+      (origin?.trim().isNotEmpty ?? false) &&
+      (destination?.trim().isNotEmpty ?? false);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final statusMessage = _resolveStatusMessage();
+    final isButtonEnabled =
+        statusMessage == null && !isOpeningRoute && !isLoadingProfile;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryBlue.withOpacity(.08),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Icon(Icons.route_outlined,
+                      color: AppColors.primaryBlue),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Rota no Google Maps',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Monte e abra a rota com todos os passageiros confirmados.',
+                        style: theme.textTheme.bodyMedium
+                            ?.copyWith(color: AppColors.lightSlate),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            _RouteAddressRow(
+              label: 'Origem',
+              value: origin?.trim().isNotEmpty == true
+                  ? origin!.trim()
+                  : 'Endereço residencial não configurado',
+            ),
+            const SizedBox(height: 12),
+            _RouteAddressRow(
+              label: 'Destino',
+              value: destination?.trim().isNotEmpty == true
+                  ? destination!.trim()
+                  : 'Endereço corporativo não configurado',
+            ),
+            const SizedBox(height: 16),
+            if (statusMessage != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Text(
+                  statusMessage,
+                  style: theme.textTheme.bodySmall
+                      ?.copyWith(color: AppColors.warning),
+                ),
+              ),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: isButtonEnabled ? onOpenRoute : null,
+                icon: isOpeningRoute
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : const Icon(Icons.map_outlined),
+                label: const Text('Ver rota no Google Maps'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String? _resolveStatusMessage() {
+    if (isLoadingProfile) {
+      return 'Carregando endereços do motorista...';
+    }
+    if (errorMessage != null && errorMessage!.isNotEmpty) {
+      return errorMessage;
+    }
+    if (!_hasValidAddresses) {
+      return 'Configure os endereços nas configurações para liberar a rota.';
+    }
+    return null;
+  }
+}
+
+class _RouteAddressRow extends StatelessWidget {
+  const _RouteAddressRow({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: AppColors.lightSlate,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: theme.textTheme.bodyMedium,
+        ),
+      ],
     );
   }
 }

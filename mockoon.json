@@ -141,7 +141,7 @@
       "responses": [
         {
           "uuid": "59796ff4-82bb-4949-bf22-ef7a0d1856a0",
-          "body": "{\n  \"id\": 1,\n  \"nome\": \"João da Silva\",\n  \"departamento\": \"Tecnologia da Informação\",\n  \"unidade\": \"Campinas - SP\",\n  \"preferenciasCarona\": {\n    \"aceitaConversas\": true,\n    \"aceitaMusica\": false,\n    \"aceitaPets\": true,\n    \"aceitaFumar\": false,\n    \"horarioPreferidoIda\": \"07:30\",\n    \"horarioPreferidoVolta\": \"17:45\"\n  },\n  \"formasUso\": [\"motorista\", \"passageiro\"]\n}\n",
+          "body": "{\n  \"id\": 1,\n  \"nome\": \"João da Silva\",\n  \"departamento\": \"Tecnologia da Informação\",\n  \"unidade\": \"Campinas - SP\",\n  \"homeAddress\": \"Rua Deputado Lacerda Franco, 300 - Pinheiros, São Paulo - SP\",\n  \"workAddress\": \"Av. Jornalista Roberto Marinho, 85 - Brooklin, São Paulo - SP\",\n  \"preferenciasCarona\": {\n    \"aceitaConversas\": true,\n    \"aceitaMusica\": false,\n    \"aceitaPets\": true,\n    \"aceitaFumar\": false,\n    \"horarioPreferidoIda\": \"07:30\",\n    \"horarioPreferidoVolta\": \"17:45\"\n  },\n  \"formasUso\": [\"motorista\", \"passageiro\"]\n}\n",
           "latency": 0,
           "statusCode": 200,
           "label": "",
