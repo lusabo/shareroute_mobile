@@ -123,11 +123,12 @@ class _DriverActiveRideScreenState extends State<DriverActiveRideScreen> {
     });
 
     try {
-      await _mapsRouteLauncher.openRoute(
+      final routeUrl = await _mapsRouteLauncher.openRoute(
         origin: origin,
         destination: destination,
         waypoints: ride.passengers.map((p) => p.address).toList(),
       );
+      await _openMapsLink(routeUrl);
     } on PlatformException catch (error) {
       _showSnackBar(error.message ?? 'Falha ao abrir o Google Maps.');
     } catch (_) {
