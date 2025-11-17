@@ -193,6 +193,37 @@
       "responseMode": null,
       "streamingMode": null,
       "streamingInterval": 0
+    },
+    {
+      "uuid": "f5e34c42-56c9-4a6e-b1b6-5d7ddc3cc5cb",
+      "type": "http",
+      "documentation": "Recebe o payload enviado pelo app ao salvar as rotas do motorista.",
+      "method": "post",
+      "endpoint": "motorista/rotas",
+      "responses": [
+        {
+          "uuid": "4f9f11df-547a-4a12-9b6b-8990d69342cc",
+          "body": "{\n  \"status\": \"sucesso\",\n  \"message\": \"Preferências de rota salvas.\",\n  \"rotasRecebidas\": {{body}}\n}\n",
+          "latency": 0,
+          "statusCode": 201,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
     }
   ],
   "rootChildren": [
@@ -211,6 +242,10 @@
     {
       "type": "route",
       "uuid": "d2261602-846e-44c2-a331-abe045abaf4b"
+    },
+    {
+      "type": "route",
+      "uuid": "f5e34c42-56c9-4a6e-b1b6-5d7ddc3cc5cb"
     }
   ],
   "proxyMode": false,

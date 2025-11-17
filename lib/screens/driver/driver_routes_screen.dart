@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app_theme.dart';
+
 import '../../widgets/section_header.dart';
 
 class DriverRoutesScreen extends StatefulWidget {
@@ -113,9 +114,6 @@ class _DriverRoutesScreenState extends State<DriverRoutesScreen> {
                 ),
               ),
               ElevatedButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.check_circle_outline),
-                label: const Text('Salvar preferências'),
               ),
             ],
           ),
