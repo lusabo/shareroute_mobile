@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../app_theme.dart';
 import '../../models/mock_data.dart';
@@ -10,8 +9,18 @@ class DriverRequestsScreen extends StatelessWidget {
   const DriverRequestsScreen({super.key});
 
   Future<void> _openMapsLink(BuildContext context, String url) async {
-    final launched = await launchUrlString(
-      url,
+    final uri = Uri.tryParse(url);
+    if (uri == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Link inválido para o Google Maps.'),
+        ),
+      );
+      return;
+    }
+
+    final launched = await launchUrl(
+      uri,
       mode: LaunchMode.externalApplication,
     );
 
