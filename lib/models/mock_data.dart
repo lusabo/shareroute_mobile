@@ -6,6 +6,9 @@ class RideRequest {
     required this.destination,
     required this.photoUrl,
     required this.notes,
+    required this.rideType,
+    required this.address,
+    required this.mapsUrl,
   });
 
   final String passengerName;
@@ -14,6 +17,9 @@ class RideRequest {
   final String destination;
   final String photoUrl;
   final String notes;
+  final String rideType;
+  final String address;
+  final String mapsUrl;
 }
 
 class RideRoute {
@@ -68,6 +74,10 @@ final mockRequests = [
     destination: 'Escritório HQ',
     photoUrl: 'https://i.pravatar.cc/100?img=1',
     notes: 'Prefere silêncio nas manhãs.',
+    rideType: 'Casa → Trabalho',
+    address: 'Rua Vergueiro, 3185 - Vila Mariana, São Paulo - SP',
+    mapsUrl:
+        'https://www.google.com/maps/search/?api=1&query=Rua%20Vergueiro%2C%203185%20-%20Vila%20Mariana%2C%20S%C3%A3o%20Paulo%20-%20SP',
   ),
   RideRequest(
     passengerName: 'Felipe Rocha',
@@ -76,6 +86,10 @@ final mockRequests = [
     destination: 'Escritório HQ',
     photoUrl: 'https://i.pravatar.cc/100?img=5',
     notes: 'Aceita dividir pedágio.',
+    rideType: 'Trabalho → Casa',
+    address: 'Av. Brig. Faria Lima, 3477 - Itaim Bibi, São Paulo - SP',
+    mapsUrl:
+        'https://www.google.com/maps/search/?api=1&query=Av.%20Brig.%20Faria%20Lima%2C%203477%20-%20Itaim%20Bibi%2C%20S%C3%A3o%20Paulo%20-%20SP',
   ),
   RideRequest(
     passengerName: 'Larissa Melo',
@@ -84,6 +98,10 @@ final mockRequests = [
     destination: 'Escritório HQ',
     photoUrl: 'https://i.pravatar.cc/100?img=12',
     notes: 'Leva café para compartilhar.',
+    rideType: 'Casa → Trabalho',
+    address: 'Rua da Mooca, 2500 - Mooca, São Paulo - SP',
+    mapsUrl:
+        'https://www.google.com/maps/search/?api=1&query=Rua%20da%20Mooca%2C%202500%20-%20Mooca%2C%20S%C3%A3o%20Paulo%20-%20SP',
   ),
 ];
 
