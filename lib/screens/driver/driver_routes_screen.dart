@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app_theme.dart';
-import '../../routes.dart';
-import '../../services/driver_route_service.dart';
+
 import '../../widgets/section_header.dart';
 
 class DriverRoutesScreen extends StatefulWidget {
@@ -14,9 +13,6 @@ class DriverRoutesScreen extends StatefulWidget {
 
 class _DriverRoutesScreenState extends State<DriverRoutesScreen> {
   static const _weekDays = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-
-  final _routeService = DriverRouteService();
-  bool _isSaving = false;
 
   final Map<String, Set<int>> _selectedDays = {
     'homeWork': {0, 1, 2, 3, 4},
@@ -65,52 +61,6 @@ class _DriverRoutesScreenState extends State<DriverRoutesScreen> {
     final hour = time.hour.toString().padLeft(2, '0');
     final minute = time.minute.toString().padLeft(2, '0');
     return '$hour:$minute';
-  }
-
-  Map<String, dynamic> _buildRoutePayload({
-    required String routeKey,
-    required String direction,
-  }) {
-    final dayIndexes = _selectedDays[routeKey]!.toList()..sort();
-    return {
-      'direction': direction,
-      'weekdays': dayIndexes.map((index) => _weekDays[index]).toList(),
-      'departureTime': _formatTime(_departureTimes[routeKey]!),
-      'availableSeats': _availableSeats[routeKey]!,
-    };
-  }
-
-  Future<void> _savePreferences() async {
-    setState(() => _isSaving = true);
-    final routesPayload = [
-      _buildRoutePayload(routeKey: 'homeWork', direction: 'CASA_TRABALHO'),
-      _buildRoutePayload(routeKey: 'workHome', direction: 'TRABALHO_CASA'),
-    ];
-
-    try {
-      await _routeService.saveRoutePreferences(routes: routesPayload);
-      if (!mounted) return;
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        AppRoutes.home,
-        (route) => false,
-      );
-    } on DriverRouteException catch (error) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error.message)),
-      );
-    } catch (_) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Não foi possível salvar suas preferências.'),
-        ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() => _isSaving = false);
-      }
-    }
   }
 
   @override
@@ -164,15 +114,6 @@ class _DriverRoutesScreenState extends State<DriverRoutesScreen> {
                 ),
               ),
               ElevatedButton.icon(
-                onPressed: _isSaving ? null : _savePreferences,
-                icon: _isSaving
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.check_circle_outline),
-                label: Text(_isSaving ? 'Salvando...' : 'Salvar preferências'),
               ),
             ],
           ),
