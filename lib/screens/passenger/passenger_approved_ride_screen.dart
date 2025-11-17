@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app_theme.dart';
+import '../../widgets/section_header.dart';
 
 class PassengerApprovedRideScreen extends StatelessWidget {
   const PassengerApprovedRideScreen({super.key});
@@ -30,7 +31,8 @@ class PassengerApprovedRideScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              Expanded(
+              SizedBox(
+                height: 360,
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -155,6 +157,66 @@ class _DriverSummary extends StatelessWidget {
   }
 }
 
+class _NotificationTile extends StatelessWidget {
+  const _NotificationTile({
+    required this.title,
+    required this.description,
+    required this.time,
+  });
+
+  final String title;
+  final String description;
+  final String time;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.primaryBlue.withOpacity(.04),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.primaryBlue.withOpacity(.08)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: AppColors.midnightBlue,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            description,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: AppColors.midnightBlue.withOpacity(.8),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              const Icon(Icons.access_time, size: 14, color: AppColors.slateGray),
+              const SizedBox(width: 6),
+              Text(
+                time,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: AppColors.slateGray,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _InfoTag extends StatelessWidget {
   const _InfoTag({
     required this.icon,
@@ -183,17 +245,17 @@ class _InfoTag extends StatelessWidget {
                   color: AppColors.primaryBlue,
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Text(
-            value,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Text(
+          value,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+        ),
+      ],
     );
   }
 }
