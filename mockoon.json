@@ -286,6 +286,37 @@
       "responseMode": null,
       "streamingMode": null,
       "streamingInterval": 0
+    },
+    {
+      "uuid": "8dd88ab2-4c8f-4fe3-9cf9-49e9549f6b4c",
+      "type": "http",
+      "documentation": "Recebe avaliações enviadas pelos passageiros.",
+      "method": "post",
+      "endpoint": "passageiro/avaliacoes",
+      "responses": [
+        {
+          "uuid": "dc1c8850-3eed-4a6f-88ab-8d9a7355a5fc",
+          "body": "{\n  \"message\": \"Avaliação registrada com sucesso\"\n}",
+          "latency": 150,
+          "statusCode": 201,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
     }
   ],
   "rootChildren": [
@@ -316,6 +347,10 @@
     {
       "type": "route",
       "uuid": "bb8687db-c8d5-4a87-8d7e-d1f154f6d924"
+    },
+    {
+      "type": "route",
+      "uuid": "8dd88ab2-4c8f-4fe3-9cf9-49e9549f6b4c"
     }
   ],
   "proxyMode": false,
