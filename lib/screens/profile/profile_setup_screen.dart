@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../app_theme.dart';
-import '../../models/mock_data.dart';
 import '../../models/user_profile.dart';
 import '../../routes.dart';
 import '../../services/profile_service.dart';
@@ -408,8 +407,10 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                             ),
                             const SizedBox(height: 16),
                             _buildProfileInfo(theme),
-                            const SizedBox(height: 24),
-                            _buildPreferencesSection(theme),
+                            if (isDriver) ...[
+                              const SizedBox(height: 24),
+                              _buildPreferencesSection(theme),
+                            ],
                             const SizedBox(height: 24),
                             const SectionHeader(
                               title: 'Como deseja utilizar o ShareRoute?',
@@ -446,52 +447,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                                   child: Text('Passageiro'),
                                 ),
                               ],
-                            ),
-                            const SizedBox(height: 24),
-                            Container(
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                                border:
-                                    Border.all(color: const Color(0xFFE0E7FF)),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Benefícios corporativos disponíveis',
-                                    style:
-                                        theme.textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  ...mockPerks.map(
-                                    (perk) => Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 6,
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.check_circle,
-                                            color: AppColors.accentGreen,
-                                          ),
-                                          const SizedBox(width: 12),
-                                          Expanded(
-                                            child: Text(
-                                              perk,
-                                              style:
-                                                  theme.textTheme.bodyMedium,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
                             ),
                             const SizedBox(height: 32),
                             SizedBox(
