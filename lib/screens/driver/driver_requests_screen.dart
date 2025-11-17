@@ -2,11 +2,57 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../app_theme.dart';
-import '../../models/mock_data.dart';
+import '../../models/driver_ride_request.dart';
+import '../../services/driver_requests_service.dart';
 import '../../widgets/section_header.dart';
 
-class DriverRequestsScreen extends StatelessWidget {
+class DriverRequestsScreen extends StatefulWidget {
   const DriverRequestsScreen({super.key});
+
+  @override
+  State<DriverRequestsScreen> createState() => _DriverRequestsScreenState();
+}
+
+class _DriverRequestsScreenState extends State<DriverRequestsScreen> {
+  final DriverRequestsService _service = DriverRequestsService();
+
+  List<DriverRideRequest> _requests = const <DriverRideRequest>[];
+  bool _isLoading = true;
+  String? _errorMessage;
+  String? _processingRequestId;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRequests();
+  }
+
+  Future<void> _loadRequests() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+    try {
+      final requests = await _service.fetchRideRequests();
+      setState(() {
+        _requests = requests;
+      });
+    } on DriverRequestsException catch (error) {
+      setState(() {
+        _errorMessage = error.message;
+      });
+    } catch (_) {
+      setState(() {
+        _errorMessage = 'Não foi possível carregar as solicitações.';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   Future<void> _openMapsLink(BuildContext context, String url) async {
     final uri = Uri.tryParse(url);
@@ -33,12 +79,74 @@ class DriverRequestsScreen extends StatelessWidget {
     }
   }
 
+  Future<void> _respondToRequest(
+    BuildContext context,
+    DriverRideRequest request,
+    bool accept,
+  ) async {
+    setState(() {
+      _processingRequestId = request.id;
+    });
+
+    try {
+      await _service.respondToRequest(
+        requestId: request.id,
+        accept: accept,
+      );
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _requests =
+            _requests.where((element) => element.id != request.id).toList();
+        _processingRequestId = null;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            accept
+                ? 'Solicitação aceita com sucesso!'
+                : 'Solicitação rejeitada com sucesso.',
+          ),
+        ),
+      );
+    } on DriverRequestsException catch (error) {
+      setState(() {
+        _processingRequestId = null;
+      });
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error.message)),
+      );
+    } catch (_) {
+      setState(() {
+        _processingRequestId = null;
+      });
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Não foi possível atualizar a solicitação.'),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Solicitações de carona'),
+        actions: [
+          IconButton(
+            onPressed: _isLoading ? null : _loadRequests,
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Padding(
@@ -51,26 +159,61 @@ class DriverRequestsScreen extends StatelessWidget {
                 subtitle: 'Analise perfil e histórico antes de aceitar.',
               ),
               Expanded(
-                child: ListView.separated(
-                  itemCount: mockRequests.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final request = mockRequests[index];
-                    return Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(18),
+                child: Builder(
+                  builder: (context) {
+                    if (_isLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+
+                    if (_errorMessage != null) {
+                      return Center(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Row(
+                            Text(
+                              _errorMessage!,
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.bodyLarge,
+                            ),
+                            const SizedBox(height: 12),
+                            ElevatedButton(
+                              onPressed: _loadRequests,
+                              child: const Text('Tentar novamente'),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    if (_requests.isEmpty) {
+                      return const Center(
+                        child: Text('Não há solicitações pendentes.'),
+                      );
+                    }
+
+                    return ListView.separated(
+                      itemCount: _requests.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 12),
+                      itemBuilder: (context, index) {
+                        final request = _requests[index];
+                        return Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(18),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                CircleAvatar(
-                                  radius: 28,
-                                  backgroundImage: NetworkImage(request.photoUrl),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Column(
+                                Row(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 28,
+                                      backgroundImage:
+                                          NetworkImage(request.photoUrl),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
@@ -81,8 +224,9 @@ class DriverRequestsScreen extends StatelessWidget {
                                       ),
                                       Text(
                                         'Saída ${request.time} • ${request.origin}',
-                                        style: theme.textTheme.bodyMedium
-                                            ?.copyWith(color: AppColors.lightSlate),
+                                        style: theme.textTheme.bodyMedium?.copyWith(
+                                          color: AppColors.lightSlate,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -140,12 +284,12 @@ class DriverRequestsScreen extends StatelessWidget {
                                         _openMapsLink(context, request.mapsUrl),
                                     child: Padding(
                                       padding: const EdgeInsets.all(4),
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const Icon(Icons.location_on_outlined,
-                                              color: AppColors.primaryBlue),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Icon(Icons.location_on_outlined,
+                                          color: AppColors.primaryBlue),
                                           const SizedBox(width: 12),
                                           Expanded(
                                             child: Column(
@@ -198,15 +342,44 @@ class DriverRequestsScreen extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: OutlinedButton(
-                                    onPressed: () {},
-                                    child: const Text('Rejeitar'),
+                                    onPressed: _processingRequestId == request.id
+                                        ? null
+                                        : () => _respondToRequest(
+                                              context,
+                                              request,
+                                              false,
+                                            ),
+                                    child: _processingRequestId == request.id
+                                        ? const SizedBox(
+                                            width: 18,
+                                            height: 18,
+                                            child: CircularProgressIndicator(strokeWidth: 2),
+                                          )
+                                        : const Text('Rejeitar'),
                                   ),
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: ElevatedButton(
-                                    onPressed: () {},
-                                    child: const Text('Aceitar'),
+                                    onPressed: _processingRequestId == request.id
+                                        ? null
+                                        : () => _respondToRequest(
+                                              context,
+                                              request,
+                                              true,
+                                            ),
+                                    child: _processingRequestId == request.id
+                                        ? const SizedBox(
+                                            width: 18,
+                                            height: 18,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              valueColor: AlwaysStoppedAnimation(
+                                                Colors.white,
+                                              ),
+                                            ),
+                                          )
+                                        : const Text('Aceitar'),
                                   ),
                                 ),
                               ],
@@ -216,9 +389,9 @@ class DriverRequestsScreen extends StatelessWidget {
                       ),
                     );
                   },
-                ),
-              ),
-            ],
+                );
+              },
+            ),
           ),
         ),
       ),
