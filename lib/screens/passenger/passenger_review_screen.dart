@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../app_theme.dart';
+import '../../models/pending_driver_review.dart';
+import 'driver_evaluation_screen.dart';
 
 class PassengerReviewScreen extends StatefulWidget {
   const PassengerReviewScreen({super.key});
@@ -10,8 +11,43 @@ class PassengerReviewScreen extends StatefulWidget {
 }
 
 class _PassengerReviewScreenState extends State<PassengerReviewScreen> {
-  double rating = 5;
-  final selectedTags = <String>{};
+  late final List<PendingDriverReview> _pendingReviews = [
+    const PendingDriverReview(
+      rideId: 'ride_8721',
+      driverId: 'driver_ana',
+      driverName: 'Ana Martins',
+      avatarUrl: 'https://i.pravatar.cc/100?img=15',
+      rideSummary: 'Saída do escritório · Ontem às 18h10',
+    ),
+    const PendingDriverReview(
+      rideId: 'ride_8722',
+      driverId: 'driver_juliana',
+      driverName: 'Juliana Costa',
+      avatarUrl: 'https://i.pravatar.cc/100?img=32',
+      rideSummary: 'Trajeto Vila Olímpia → Itaim · Segunda-feira',
+    ),
+    const PendingDriverReview(
+      rideId: 'ride_8723',
+      driverId: 'driver_camila',
+      driverName: 'Camila Duarte',
+      avatarUrl: 'https://i.pravatar.cc/100?img=47',
+      rideSummary: 'Retorno para casa · Semana passada',
+    ),
+  ];
+
+  void _openReview(PendingDriverReview review) async {
+    final submitted = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => DriverEvaluationScreen(candidate: review),
+      ),
+    );
+
+    if (submitted == true && mounted) {
+      setState(() {
+        _pendingReviews.removeWhere((item) => item.rideId == review.rideId);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,106 +62,69 @@ class _PassengerReviewScreenState extends State<PassengerReviewScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: const [
-                          CircleAvatar(
-                            radius: 32,
-                            backgroundImage: NetworkImage('https://i.pravatar.cc/100?img=15'),
-                          ),
-                          SizedBox(width: 16),
-                          Expanded(
-                            child: Text(
-                              'Ana Martins',
-                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                          Chip(
-                            label: Text('Elétrico / Híbrido'),
-                            avatar: Icon(Icons.energy_savings_leaf, size: 18),
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        'Como foi o trajeto?',
-                        style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      Slider(
-                        value: rating,
-                        min: 1,
-                        max: 5,
-                        divisions: 8,
-                        label: rating.toStringAsFixed(1),
-                        onChanged: (value) => setState(() => rating = value),
-                      ),
-                      Wrap(
-                        spacing: 8,
-                        children: const [
-                          _CriteriaChip(label: 'Direção segura'),
-                          _CriteriaChip(label: 'Pontualidade'),
-                          _CriteriaChip(label: 'Simpatia'),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        'Marque os pontos fortes desta carona:',
-                        style: theme.textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 12),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          'Climatização excelente',
-                          'Conversa agradável',
-                          'Rota eficiente',
-                          'Carro confortável',
-                          'Playlist colaborativa',
-                        ].map(
-                              (item) => ChoiceChip(
-                            label: Text(item),
-                            selected: selectedTags.contains(item),
-                            onSelected: (selected) => setState(() {
-                              if (selected) {
-                                selectedTags.add(item);
-                              } else {
-                                selectedTags.remove(item);
-                              }
-                            }),
-                          ),
-                        ).toList(),
-                      ),
-                      const SizedBox(height: 24),
-                      TextFormField(
-                        maxLines: 5,
-                        decoration: const InputDecoration(
-                          labelText: 'Deixe um feedback para a motorista',
-                          alignLabelWithHint: true,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      CheckboxListTile(
-                        value: true,
-                        onChanged: (_) {},
-                        controlAffinity: ListTileControlAffinity.leading,
-                        title: const Text('Compartilhar elogio com o RH e time ESG'),
-                      ),
-                    ],
-                  ),
+              Text(
+                'Motoristas aguardando avaliação',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
               ),
+              const SizedBox(height: 8),
+              Text(
+                'Escolha um motorista para registrar o feedback da última carona.',
+                style: theme.textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: _pendingReviews.isEmpty
+                    ? _ReviewEmptyState(onSkip: () => Navigator.pop(context))
+                    : ListView.separated(
+                        itemCount: _pendingReviews.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 12),
+                        itemBuilder: (context, index) {
+                          final review = _pendingReviews[index];
+                          return Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                              leading: CircleAvatar(
+                                radius: 28,
+                                backgroundImage: NetworkImage(review.avatarUrl),
+                              ),
+                              title: Text(
+                                review.driverName,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              subtitle: Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Text(
+                                  review.rideSummary,
+                                  style: theme.textTheme.bodySmall,
+                                ),
+                              ),
+                              trailing: const Icon(Icons.chevron_right),
+                              onTap: () => _openReview(review),
+                            ),
+                          );
+                        },
+                      ),
+              ),
+              const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
+                child: TextButton.icon(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Enviar avaliação'),
+                  icon: const Icon(Icons.close),
+                  label: const Text('Não avaliar agora'),
                 ),
-              ),
+              )
             ],
           ),
         ),
@@ -134,25 +133,41 @@ class _PassengerReviewScreenState extends State<PassengerReviewScreen> {
   }
 }
 
-class _CriteriaChip extends StatelessWidget {
-  const _CriteriaChip({required this.label});
+class _ReviewEmptyState extends StatelessWidget {
+  const _ReviewEmptyState({required this.onSkip});
 
-  final String label;
+  final VoidCallback onSkip;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppColors.primaryBlue.withOpacity(.08),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(
-          color: AppColors.primaryBlue,
-          fontWeight: FontWeight.w600,
-        ),
+    final theme = Theme.of(context);
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.emoji_people_outlined,
+            size: 64,
+            color: theme.colorScheme.primary,
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Você está em dia com as avaliações!',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Assim que finalizar novas caronas, os motoristas aparecerão aqui.',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 24),
+          OutlinedButton(
+            onPressed: onSkip,
+            child: const Text('Voltar'),
+          ),
+        ],
       ),
     );
   }
