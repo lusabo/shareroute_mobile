@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+String? _stringOrNull(dynamic value) => value is String ? value : null;
+
 enum ParticipationMode {
   driver,
   passenger,
@@ -96,11 +98,15 @@ class UserProfile {
     required this.unidade,
     required this.preferenciasCarona,
     required this.formasUso,
+    required this.homeAddress,
+    required this.workAddress,
   });
 
   final String nome;
   final String departamento;
   final String unidade;
+  final String homeAddress;
+  final String workAddress;
   final RidePreferences preferenciasCarona;
   final List<ParticipationMode> formasUso;
 
@@ -120,6 +126,12 @@ class UserProfile {
       nome: json['nome'] as String? ?? '',
       departamento: json['departamento'] as String? ?? '',
       unidade: json['unidade'] as String? ?? '',
+      homeAddress: _stringOrNull(json['homeAddress']) ??
+          _stringOrNull(json['enderecoResidencial']) ??
+          '',
+      workAddress: _stringOrNull(json['workAddress']) ??
+          _stringOrNull(json['enderecoTrabalho']) ??
+          '',
       preferenciasCarona: RidePreferences.fromJson(
         json['preferenciasCarona'] as Map<String, dynamic>? ??
             const <String, dynamic>{},
