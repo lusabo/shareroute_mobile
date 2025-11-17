@@ -390,8 +390,8 @@ class _DriverRequestsScreenState extends State<DriverRequestsScreen> {
                     );
                   },
                 );
-              },
-            ),
+              ),
+            ],
           ),
         ),
       ),
