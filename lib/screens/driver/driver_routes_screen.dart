@@ -113,7 +113,32 @@ class _DriverRoutesScreenState extends State<DriverRoutesScreen> {
                   ],
                 ),
               ),
-              ElevatedButton.icon(
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Disponibilidade atualizada com sucesso!'),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.save_outlined),
+                  label: Text(
+                    'Salvar disponibilidade',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryBlue,
+                    minimumSize: const Size.fromHeight(56),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
