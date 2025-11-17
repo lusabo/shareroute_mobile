@@ -34,11 +34,24 @@ object GoogleMapsRouteHelper {
 
     fun openGoogleMaps(context: Context, url: String) {
         val uri = Uri.parse(url)
-        val browserIntent = Intent(Intent.ACTION_VIEW, uri).apply {
+        val mapsIntent = Intent(Intent.ACTION_VIEW, uri).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            setPackage("com.google.android.apps.maps")
         }
 
-        context.startActivity(browserIntent)
+        val packageManager = context.packageManager
+        if (mapsIntent.resolveActivity(packageManager) == null) {
+            mapsIntent.setPackage(null)
+        }
+
+        try {
+            context.startActivity(mapsIntent)
+        } catch (error: Exception) {
+            val fallbackIntent = Intent(Intent.ACTION_VIEW, uri).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            context.startActivity(fallbackIntent)
+        }
     }
 
     private fun sanitizeAddress(raw: String): String {
