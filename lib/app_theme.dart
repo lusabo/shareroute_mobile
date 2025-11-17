@@ -7,6 +7,7 @@ class AppColors {
   static const softWhite = Color(0xFFF5F8FF);
   static const slate = Color(0xFF4F5D75);
   static const lightSlate = Color(0xFF8892A0);
+  static const slateGray = Color(0xFF6B7280);
   static const warning = Color(0xFFFFB74D);
 }
 
