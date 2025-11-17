@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../app_theme.dart';
 import '../../models/driver_active_ride.dart';
+import '../../models/ride_direction.dart';
 import '../../services/driver_active_ride_service.dart';
 import '../../widgets/section_header.dart';
 
@@ -270,7 +271,7 @@ class _PassengerTile extends StatelessWidget {
                   child: OutlinedButton.icon(
                     onPressed: onOpenMap,
                     icon: const Icon(Icons.map_outlined),
-                    label: const Text('Ver no Google Maps'),
+                    label: const Text('Mapa'),
                   ),
                 ),
                 const SizedBox(width: 12),
