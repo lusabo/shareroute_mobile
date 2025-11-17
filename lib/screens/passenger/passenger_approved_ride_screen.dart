@@ -15,7 +15,7 @@ class PassengerApprovedRideScreen extends StatelessWidget {
         title: const Text('Carona aprovada'),
       ),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,25 +123,28 @@ class _DriverSummary extends StatelessWidget {
                     ],
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: _InfoTag(
-                    icon: Icons.swap_horiz,
-                    label: 'Tipo de carona',
-                    value: 'Casa → Trabalho',
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _InfoTag(
-                    icon: Icons.schedule,
-                    label: 'Sai de casa',
-                    value: '07:00',
-                  ),
+              ),
+              const SizedBox(height: 24),
+              const SectionHeader(title: 'Notificações recentes'),
+              const SizedBox(height: 12),
+              const _NotificationTile(
+                title: 'Embarque confirmado',
+                description: 'Ana confirmou sua presença. Chegue 5 minutos antes.',
+                time: 'Há 10 minutos',
+              ),
+              const SizedBox(height: 12),
+              const _NotificationTile(
+                title: 'Benefício desbloqueado',
+                description: 'Você ganhou 10 pts no clube de benefícios ESG.',
+                time: 'Ontem',
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {},
+                  icon: const Icon(Icons.check_circle_outline),
+                  label: const Text('Confirmar embarque agora'),
                 ),
               ],
             ),
@@ -165,24 +168,19 @@ class _InfoTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: AppColors.slateGray.withOpacity(.08),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, color: AppColors.midnightBlue),
-              const SizedBox(width: 8),
-              Text(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: AppColors.primaryBlue),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
                 label,
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
-                  color: AppColors.midnightBlue,
+                  color: AppColors.primaryBlue,
                 ),
               ),
             ],
