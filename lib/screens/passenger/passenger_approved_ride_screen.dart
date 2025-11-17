@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../app_theme.dart';
-import '../../widgets/section_header.dart';
 
 class PassengerApprovedRideScreen extends StatelessWidget {
   const PassengerApprovedRideScreen({super.key});
@@ -127,135 +126,9 @@ class _DriverSummary extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 24),
-            const SectionHeader(title: 'Notificações recentes'),
-            const SizedBox(height: 12),
-            const _NotificationTile(
-              title: 'Embarque confirmado',
-              description: 'Ana confirmou sua presença. Chegue 5 minutos antes.',
-              time: 'Há 10 minutos',
-            ),
-            const SizedBox(height: 12),
-            const _NotificationTile(
-              title: 'Benefício desbloqueado',
-              description: 'Você ganhou 10 pts no clube de benefícios ESG.',
-              time: 'Ontem',
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.check_circle_outline),
-                label: const Text('Confirmar embarque agora'),
-              ),
-            ),
           ],
         ),
       ),
-    );
-  }
-}
-
-class _NotificationTile extends StatelessWidget {
-  const _NotificationTile({
-    required this.title,
-    required this.description,
-    required this.time,
-  });
-
-  final String title;
-  final String description;
-  final String time;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.primaryBlue.withOpacity(.04),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primaryBlue.withOpacity(.08)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: AppColors.midnightBlue,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            description,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: AppColors.midnightBlue.withOpacity(.8),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              const Icon(Icons.access_time, size: 14, color: AppColors.slateGray),
-              const SizedBox(width: 6),
-              Text(
-                time,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: AppColors.slateGray,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _InfoTag extends StatelessWidget {
-  const _InfoTag({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(icon, color: AppColors.primaryBlue),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                label,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.primaryBlue,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 6),
-        Text(
-          value,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-        ),
-      ],
     );
   }
 }
