@@ -224,6 +224,37 @@
       "responseMode": null,
       "streamingMode": null,
       "streamingInterval": 0
+    },
+    {
+      "uuid": "73f3bc76-8b5a-4c3e-82af-6b2b59ae4fda",
+      "type": "http",
+      "documentation": "Retorna motoristas que combinam com o pedido do passageiro.",
+      "method": "post",
+      "endpoint": "passageiro/buscar-caronas",
+      "responses": [
+        {
+          "uuid": "f23b1b90-3c4d-4c31-a350-7ed4ccf8b901",
+          "body": "{\n  \"matches\": [\n    {\n      \"id\": \"match_ana\",\n      \"driverName\": \"Ana Martins\",\n      \"driverPhoto\": \"https://i.pravatar.cc/100?img=15\",\n      \"rating\": 4.9,\n      \"car\": \"Toyota Corolla Híbrido • Azul\",\n      \"origin\": \"Vila Olímpia\",\n      \"destination\": \"Escritório HQ\",\n      \"departureTime\": \"07:20\",\n      \"arrivalTime\": \"08:05\",\n      \"detourKm\": 1.8,\n      \"availableSeats\": 2,\n      \"direction\": \"home_to_work\",\n      \"notes\": \"Costuma ouvir podcasts e mantém o ar-condicionado ligado.\",\n      \"tags\": [\"Híbrido\", \"Silêncio\", \"Pontual\"]\n    },\n    {\n      \"id\": \"match_carlos\",\n      \"driverName\": \"Carlos Lima\",\n      \"driverPhoto\": \"https://i.pravatar.cc/100?img=18\",\n      \"rating\": 4.7,\n      \"car\": \"Chevrolet Bolt EV • Branco\",\n      \"origin\": \"Moema\",\n      \"destination\": \"Escritório HQ\",\n      \"departureTime\": \"07:40\",\n      \"arrivalTime\": \"08:15\",\n      \"detourKm\": 2.6,\n      \"availableSeats\": 3,\n      \"direction\": \"home_to_work\",\n      \"notes\": \"Disponibiliza carregadores e permite levar café.\",\n      \"tags\": [\"Elétrico\", \"Conversa\", \"Café\"]\n    },\n    {\n      \"id\": \"match_juliana\",\n      \"driverName\": \"Juliana Prado\",\n      \"driverPhoto\": \"https://i.pravatar.cc/100?img=31\",\n      \"rating\": 5.0,\n      \"car\": \"Honda HR-V • Verde\",\n      \"origin\": \"Alto da Lapa\",\n      \"destination\": \"Escritório HQ\",\n      \"departureTime\": \"07:05\",\n      \"arrivalTime\": \"07:55\",\n      \"detourKm\": 3.1,\n      \"availableSeats\": 1,\n      \"direction\": \"home_to_work\",\n      \"notes\": \"Prefere que os passageiros estejam prontos 5 minutos antes.\",\n      \"tags\": [\"Preferência música\", \"Pontual\", \"Sem pets\"]\n    }\n  ]\n}",
+          "latency": 600,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
     }
   ],
   "rootChildren": [
@@ -246,6 +277,10 @@
     {
       "type": "route",
       "uuid": "f5e34c42-56c9-4a6e-b1b6-5d7ddc3cc5cb"
+    },
+    {
+      "type": "route",
+      "uuid": "73f3bc76-8b5a-4c3e-82af-6b2b59ae4fda"
     }
   ],
   "proxyMode": false,
