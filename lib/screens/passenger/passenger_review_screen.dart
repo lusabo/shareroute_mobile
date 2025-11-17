@@ -17,21 +17,24 @@ class _PassengerReviewScreenState extends State<PassengerReviewScreen> {
       driverId: 'driver_ana',
       driverName: 'Ana Martins',
       avatarUrl: 'https://i.pravatar.cc/100?img=15',
-      rideSummary: 'Saída do escritório · Ontem às 18h10',
+      rideDate: '18/09/2024',
+      rideType: RideType.workToHome,
     ),
     const PendingDriverReview(
       rideId: 'ride_8722',
       driverId: 'driver_juliana',
       driverName: 'Juliana Costa',
       avatarUrl: 'https://i.pravatar.cc/100?img=32',
-      rideSummary: 'Trajeto Vila Olímpia → Itaim · Segunda-feira',
+      rideDate: '16/09/2024',
+      rideType: RideType.homeToWork,
     ),
     const PendingDriverReview(
       rideId: 'ride_8723',
       driverId: 'driver_camila',
       driverName: 'Camila Duarte',
       avatarUrl: 'https://i.pravatar.cc/100?img=47',
-      rideSummary: 'Retorno para casa · Semana passada',
+      rideDate: '12/09/2024',
+      rideType: RideType.workToHome,
     ),
   ];
 
@@ -103,10 +106,36 @@ class _PassengerReviewScreenState extends State<PassengerReviewScreen> {
                                 ),
                               ),
                               subtitle: Padding(
-                                padding: const EdgeInsets.only(top: 4),
-                                child: Text(
-                                  review.rideSummary,
-                                  style: theme.textTheme.bodySmall,
+                                padding: const EdgeInsets.only(top: 6),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      review.rideDate,
+                                      style: theme.textTheme.bodySmall?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: theme.colorScheme.primary
+                                            .withOpacity(0.08),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        review.rideType.label,
+                                        style: theme.textTheme.labelSmall?.copyWith(
+                                          color: theme.colorScheme.primary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                               trailing: const Icon(Icons.chevron_right),
