@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../app_theme.dart';
 import '../../models/mock_data.dart';
@@ -6,6 +8,21 @@ import '../../widgets/section_header.dart';
 
 class DriverRequestsScreen extends StatelessWidget {
   const DriverRequestsScreen({super.key});
+
+  Future<void> _openMapsLink(BuildContext context, String url) async {
+    final launched = await launchUrlString(
+      url,
+      mode: LaunchMode.externalApplication,
+    );
+
+    if (!launched) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Não foi possível abrir o Google Maps.'),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +83,106 @@ class DriverRequestsScreen extends StatelessWidget {
                                   icon: const Icon(Icons.chat_bubble_outline),
                                 ),
                               ],
+                            ),
+                            const SizedBox(height: 16),
+                            Container(
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryBlue.withOpacity(.04),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Icon(Icons.compare_arrows,
+                                          color: AppColors.primaryBlue),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Tipo de carona',
+                                              style: theme.textTheme.bodySmall
+                                                  ?.copyWith(
+                                                color: AppColors.lightSlate,
+                                              ),
+                                            ),
+                                            Text(
+                                              request.rideType,
+                                              style: theme.textTheme.bodyLarge
+                                                  ?.copyWith(
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  InkWell(
+                                    borderRadius: BorderRadius.circular(12),
+                                    onTap: () =>
+                                        _openMapsLink(context, request.mapsUrl),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(4),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Icon(Icons.location_on_outlined,
+                                              color: AppColors.primaryBlue),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Endereço do passageiro',
+                                                  style: theme
+                                                      .textTheme.bodySmall
+                                                      ?.copyWith(
+                                                    color: AppColors.lightSlate,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  request.address,
+                                                  style: theme
+                                                      .textTheme.bodyMedium
+                                                      ?.copyWith(
+                                                    height: 1.4,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 8),
+                                                Text(
+                                                  'Abrir no Google Maps',
+                                                  style: theme
+                                                      .textTheme.bodySmall
+                                                      ?.copyWith(
+                                                    color:
+                                                        AppColors.primaryBlue,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const Icon(Icons.open_in_new,
+                                              size: 18,
+                                              color: AppColors.primaryBlue),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                             const SizedBox(height: 16),
                             Container(
