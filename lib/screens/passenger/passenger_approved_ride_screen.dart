@@ -20,7 +20,7 @@ class PassengerApprovedRideScreen extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,22 +143,19 @@ class PassengerApprovedRideScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               const SectionHeader(title: 'Notificações recentes'),
-              Expanded(
-                child: ListView(
-                  children: const [
-                    _NotificationTile(
-                      title: 'Embarque confirmado',
-                      description: 'Ana confirmou sua presença. Chegue 5 minutos antes.',
-                      time: 'Há 10 minutos',
-                    ),
-                    _NotificationTile(
-                      title: 'Benefício desbloqueado',
-                      description: 'Você ganhou 10 pts no clube de benefícios ESG.',
-                      time: 'Ontem',
-                    ),
-                  ],
-                ),
+              const SizedBox(height: 12),
+              const _NotificationTile(
+                title: 'Embarque confirmado',
+                description: 'Ana confirmou sua presença. Chegue 5 minutos antes.',
+                time: 'Há 10 minutos',
               ),
+              const SizedBox(height: 12),
+              const _NotificationTile(
+                title: 'Benefício desbloqueado',
+                description: 'Você ganhou 10 pts no clube de benefícios ESG.',
+                time: 'Ontem',
+              ),
+              const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
@@ -191,11 +188,13 @@ class _InfoColumn extends StatelessWidget {
           children: [
             Icon(icon, color: AppColors.primaryBlue),
             const SizedBox(width: 8),
-            Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                color: AppColors.primaryBlue,
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryBlue,
+                ),
               ),
             ),
           ],
