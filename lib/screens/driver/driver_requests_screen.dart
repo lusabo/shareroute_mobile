@@ -110,7 +110,7 @@ class DriverRequestsScreen extends StatelessWidget {
                                 Expanded(
                                   child: ElevatedButton(
                                     onPressed: () {},
-                                    child: const Text('Aceitar carona'),
+                                    child: const Text('Aceitar'),
                                   ),
                                 ),
                               ],

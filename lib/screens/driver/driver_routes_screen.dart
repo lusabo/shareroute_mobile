@@ -295,7 +295,7 @@ class _RouteCard extends StatelessWidget {
                             Expanded(
                               child: Center(
                                 child: Text(
-                                  '$seats vagas',
+                                  '$seats',
                                   style: theme.textTheme.titleMedium,
                                 ),
                               ),
