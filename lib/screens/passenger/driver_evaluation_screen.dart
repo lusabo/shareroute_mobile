@@ -118,7 +118,7 @@ class _DriverEvaluationScreenState extends State<DriverEvaluationScreen> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  widget.candidate.rideSummary,
+                                  '${widget.candidate.rideDate} · ${widget.candidate.rideType.label}',
                                   style: theme.textTheme.bodyMedium,
                                 ),
                               ],
