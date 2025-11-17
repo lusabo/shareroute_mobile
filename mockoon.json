@@ -255,6 +255,37 @@
       "responseMode": null,
       "streamingMode": null,
       "streamingInterval": 0
+    },
+    {
+      "uuid": "bb8687db-c8d5-4a87-8d7e-d1f154f6d924",
+      "type": "http",
+      "documentation": "Detalhes da carona ativa que o motorista está realizando.",
+      "method": "get",
+      "endpoint": "motorista/caronas/ativa",
+      "responses": [
+        {
+          "uuid": "e0a6c6d2-29d8-4c68-a050-ff2d6e079f61",
+          "body": "{\n  \"direction\": \"home_to_work\",\n  \"passengers\": [\n    {\n      \"id\": \"passenger_mariana\",\n      \"name\": \"Mariana Souza\",\n      \"address\": \"Rua Fidêncio Ramos, 308 - Vila Olímpia\",\n      \"googleMapsUrl\": \"https://www.google.com/maps?q=-23.595541,-46.685520\",\n      \"avatarUrl\": \"https://i.pravatar.cc/100?img=12\",\n      \"chatHistory\": [\n        {\n          \"content\": \"Mariana, consigo te buscar na portaria em 10 minutos.\",\n          \"fromDriver\": true\n        },\n        {\n          \"content\": \"Perfeito! Já estou descendo.\",\n          \"fromDriver\": false\n        }\n      ]\n    },\n    {\n      \"id\": \"passenger_felipe\",\n      \"name\": \"Felipe Rocha\",\n      \"address\": \"Rua Gomes de Carvalho, 911 - Vila Olímpia\",\n      \"googleMapsUrl\": \"https://www.google.com/maps?q=-23.595269,-46.683910\",\n      \"avatarUrl\": \"https://i.pravatar.cc/100?img=5\",\n      \"chatHistory\": [\n        {\n          \"content\": \"Felipe, você confirma o embarque no portão lateral?\",\n          \"fromDriver\": true\n        },\n        {\n          \"content\": \"Sim! Estarei lá com o crachá em mãos.\",\n          \"fromDriver\": false\n        }\n      ]\n    },\n    {\n      \"id\": \"passenger_larissa\",\n      \"name\": \"Larissa Melo\",\n      \"address\": \"Rua Bandeira Paulista, 382 - Itaim Bibi\",\n      \"googleMapsUrl\": \"https://www.google.com/maps?q=-23.583004,-46.674316\",\n      \"avatarUrl\": \"https://i.pravatar.cc/100?img=32\",\n      \"chatHistory\": [\n        {\n          \"content\": \"Larissa, lembra de avisar quando estiver no ponto?\",\n          \"fromDriver\": true\n        },\n        {\n          \"content\": \"Aviso sim! Estimo chegar em 5 minutos.\",\n          \"fromDriver\": false\n        }\n      ]\n    }\n  ]\n}",
+          "latency": 200,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
     }
   ],
   "rootChildren": [
@@ -281,6 +312,10 @@
     {
       "type": "route",
       "uuid": "73f3bc76-8b5a-4c3e-82af-6b2b59ae4fda"
+    },
+    {
+      "type": "route",
+      "uuid": "bb8687db-c8d5-4a87-8d7e-d1f154f6d924"
     }
   ],
   "proxyMode": false,
