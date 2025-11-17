@@ -91,8 +91,9 @@ class DriverActiveRideScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
                       children: const [
                         _InfoPill(icon: Icons.departure_board, label: 'Saída agora'),
                         _InfoPill(icon: Icons.timer, label: '15 min de trajeto'),
