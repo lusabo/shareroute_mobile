@@ -58,23 +58,16 @@ class _DriverRequestsScreenState extends State<DriverRequestsScreen> {
     final uri = Uri.tryParse(url);
     if (uri == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Link inválido para o Google Maps.'),
-        ),
+        const SnackBar(content: Text('Link inválido para o Google Maps.')),
       );
       return;
     }
 
-    final launched = await launchUrl(
-      uri,
-      mode: LaunchMode.externalApplication,
-    );
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
 
     if (!launched) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Não foi possível abrir o Google Maps.'),
-        ),
+        const SnackBar(content: Text('Não foi possível abrir o Google Maps.')),
       );
     }
   }
@@ -89,16 +82,14 @@ class _DriverRequestsScreenState extends State<DriverRequestsScreen> {
     });
 
     try {
-      await _service.respondToRequest(
-        requestId: request.id,
-        accept: accept,
-      );
+      await _service.respondToRequest(requestId: request.id, accept: accept);
       if (!mounted) {
         return;
       }
       setState(() {
-        _requests =
-            _requests.where((element) => element.id != request.id).toList();
+        _requests = _requests
+            .where((element) => element.id != request.id)
+            .toList();
         _processingRequestId = null;
       });
       ScaffoldMessenger.of(context).showSnackBar(
@@ -117,9 +108,9 @@ class _DriverRequestsScreenState extends State<DriverRequestsScreen> {
       if (!mounted) {
         return;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error.message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error.message)));
     } catch (_) {
       setState(() {
         _processingRequestId = null;
@@ -162,9 +153,7 @@ class _DriverRequestsScreenState extends State<DriverRequestsScreen> {
                 child: Builder(
                   builder: (context) {
                     if (_isLoading) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
+                      return const Center(child: CircularProgressIndicator());
                     }
 
                     if (_errorMessage != null) {
@@ -208,88 +197,62 @@ class _DriverRequestsScreenState extends State<DriverRequestsScreen> {
                                   children: [
                                     CircleAvatar(
                                       radius: 28,
-                                      backgroundImage:
-                                          NetworkImage(request.photoUrl),
+                                      backgroundImage: NetworkImage(
+                                        request.photoUrl,
+                                      ),
                                     ),
                                     const SizedBox(width: 16),
                                     Expanded(
                                       child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        request.passengerName,
-                                        style: theme.textTheme.titleMedium?.copyWith(
-                                          fontWeight: FontWeight.w600,
-                                        ),
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            request.passengerName,
+                                            style: theme.textTheme.titleMedium
+                                                ?.copyWith(
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                          ),
+                                          Text(
+                                            'Saída ${request.time} • ${request.origin}',
+                                            style: theme.textTheme.bodyMedium
+                                                ?.copyWith(
+                                                  color: AppColors.lightSlate,
+                                                ),
+                                          ),
+                                        ],
                                       ),
-                                      Text(
-                                        'Saída ${request.time} • ${request.origin}',
-                                        style: theme.textTheme.bodyMedium?.copyWith(
-                                          color: AppColors.lightSlate,
-                                        ),
+                                    ),
+                                    IconButton(
+                                      onPressed: () {},
+                                      icon: const Icon(
+                                        Icons.chat_bubble_outline,
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
-                                IconButton(
-                                  onPressed: () {},
-                                  icon: const Icon(Icons.chat_bubble_outline),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            Container(
-                              padding: const EdgeInsets.all(14),
-                              decoration: BoxDecoration(
-                                color: AppColors.primaryBlue.withOpacity(.04),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      const Icon(Icons.compare_arrows,
-                                          color: AppColors.primaryBlue),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Tipo de carona',
-                                              style: theme.textTheme.bodySmall
-                                                  ?.copyWith(
-                                                color: AppColors.lightSlate,
-                                              ),
-                                            ),
-                                            Text(
-                                              request.rideType,
-                                              style: theme.textTheme.bodyLarge
-                                                  ?.copyWith(
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
+                                const SizedBox(height: 16),
+                                Container(
+                                  padding: const EdgeInsets.all(14),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primaryBlue.withOpacity(
+                                      .04,
+                                    ),
+                                    borderRadius: BorderRadius.circular(16),
                                   ),
-                                  const SizedBox(height: 16),
-                                  InkWell(
-                                    borderRadius: BorderRadius.circular(12),
-                                    onTap: () =>
-                                        _openMapsLink(context, request.mapsUrl),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(4),
-                                  child: Row(
+                                  child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      const Icon(Icons.location_on_outlined,
-                                          color: AppColors.primaryBlue),
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Icon(
+                                            Icons.compare_arrows,
+                                            color: AppColors.primaryBlue,
+                                          ),
                                           const SizedBox(width: 12),
                                           Expanded(
                                             child: Column(
@@ -297,99 +260,164 @@ class _DriverRequestsScreenState extends State<DriverRequestsScreen> {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  'Endereço do passageiro',
+                                                  'Tipo de carona',
                                                   style: theme
-                                                      .textTheme.bodySmall
+                                                      .textTheme
+                                                      .bodySmall
                                                       ?.copyWith(
-                                                    color: AppColors.lightSlate,
-                                                  ),
+                                                        color: AppColors
+                                                            .lightSlate,
+                                                      ),
                                                 ),
-                                                const SizedBox(height: 4),
                                                 Text(
-                                                  request.address,
+                                                  request.rideType,
                                                   style: theme
-                                                      .textTheme.bodyMedium
+                                                      .textTheme
+                                                      .bodyLarge
                                                       ?.copyWith(
-                                                    height: 1.4,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 8),
-                                                Text(
-                                                  'Abrir no Google Maps',
-                                                  style: theme
-                                                      .textTheme.bodySmall
-                                                      ?.copyWith(
-                                                    color:
-                                                        AppColors.primaryBlue,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                      ),
                                                 ),
                                               ],
                                             ),
                                           ),
-                                          const Icon(Icons.open_in_new,
-                                              size: 18,
-                                              color: AppColors.primaryBlue),
                                         ],
                                       ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: OutlinedButton(
-                                    onPressed: _processingRequestId == request.id
-                                        ? null
-                                        : () => _respondToRequest(
-                                              context,
-                                              request,
-                                              false,
-                                            ),
-                                    child: _processingRequestId == request.id
-                                        ? const SizedBox(
-                                            width: 18,
-                                            height: 18,
-                                            child: CircularProgressIndicator(strokeWidth: 2),
-                                          )
-                                        : const Text('Rejeitar'),
+                                      const SizedBox(height: 16),
+                                      InkWell(
+                                        borderRadius: BorderRadius.circular(12),
+                                        onTap: () => _openMapsLink(
+                                          context,
+                                          request.mapsUrl,
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(4),
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              const Icon(
+                                                Icons.location_on_outlined,
+                                                color: AppColors.primaryBlue,
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'Endereço do passageiro',
+                                                      style: theme
+                                                          .textTheme
+                                                          .bodySmall
+                                                          ?.copyWith(
+                                                            color: AppColors
+                                                                .lightSlate,
+                                                          ),
+                                                    ),
+                                                    const SizedBox(height: 4),
+                                                    Text(
+                                                      request.address,
+                                                      style: theme
+                                                          .textTheme
+                                                          .bodyMedium
+                                                          ?.copyWith(
+                                                            height: 1.4,
+                                                          ),
+                                                    ),
+                                                    const SizedBox(height: 8),
+                                                    Text(
+                                                      'Abrir no Google Maps',
+                                                      style: theme
+                                                          .textTheme
+                                                          .bodySmall
+                                                          ?.copyWith(
+                                                            color: AppColors
+                                                                .primaryBlue,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                          ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              const Icon(
+                                                Icons.open_in_new,
+                                                size: 18,
+                                                color: AppColors.primaryBlue,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: ElevatedButton(
-                                    onPressed: _processingRequestId == request.id
-                                        ? null
-                                        : () => _respondToRequest(
-                                              context,
-                                              request,
-                                              true,
-                                            ),
-                                    child: _processingRequestId == request.id
-                                        ? const SizedBox(
-                                            width: 18,
-                                            height: 18,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                              valueColor: AlwaysStoppedAnimation(
-                                                Colors.white,
+                                const SizedBox(height: 16),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: OutlinedButton(
+                                        onPressed:
+                                            _processingRequestId == request.id
+                                            ? null
+                                            : () => _respondToRequest(
+                                                context,
+                                                request,
+                                                false,
                                               ),
-                                            ),
-                                          )
-                                        : const Text('Aceitar'),
-                                  ),
+                                        child:
+                                            _processingRequestId == request.id
+                                            ? const SizedBox(
+                                                width: 18,
+                                                height: 18,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                      strokeWidth: 2,
+                                                    ),
+                                              )
+                                            : const Text('Rejeitar'),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: ElevatedButton(
+                                        onPressed:
+                                            _processingRequestId == request.id
+                                            ? null
+                                            : () => _respondToRequest(
+                                                context,
+                                                request,
+                                                true,
+                                              ),
+                                        child:
+                                            _processingRequestId == request.id
+                                            ? const SizedBox(
+                                                width: 18,
+                                                height: 18,
+                                                child: CircularProgressIndicator(
+                                                  strokeWidth: 2,
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation(
+                                                        Colors.white,
+                                                      ),
+                                                ),
+                                              )
+                                            : const Text('Aceitar'),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                          ],
-                        ),
-                      ),
+                          ),
+                        );
+                      },
                     );
                   },
-                );
+                ),
               ),
             ],
           ),
