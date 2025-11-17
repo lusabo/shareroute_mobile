@@ -194,36 +194,6 @@ class DriverRequestsScreen extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 16),
-                            Container(
-                              padding: const EdgeInsets.all(14),
-                              decoration: BoxDecoration(
-                                color: AppColors.primaryBlue.withOpacity(.06),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.route_outlined, color: AppColors.primaryBlue),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          request.destination,
-                                          style: theme.textTheme.bodyMedium,
-                                        ),
-                                        Text(
-                                          request.notes,
-                                          style: theme.textTheme.bodySmall
-                                              ?.copyWith(color: AppColors.lightSlate),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 16),
                             Row(
                               children: [
                                 Expanded(
