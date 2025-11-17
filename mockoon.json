@@ -317,6 +317,130 @@
       "responseMode": null,
       "streamingMode": null,
       "streamingInterval": 0
+    },
+    {
+      "uuid": "2dbeaf19-86c0-4e36-9380-a4df01c4cbfb",
+      "type": "http",
+      "documentation": "Lista as solicitações de carona pendentes para o motorista.",
+      "method": "get",
+      "endpoint": "motorista/solicitacoes",
+      "responses": [
+        {
+          "uuid": "52fd6917-229e-4a82-8bd8-30a1a4d735f1",
+          "body": "{\n  \"requests\": [\n    {\n      \"id\": \"req_mariana\",\n      \"passengerName\": \"Mariana Souza\",\n      \"time\": \"07:20\",\n      \"origin\": \"Vila Mariana\",\n      \"destination\": \"Escritório HQ\",\n      \"photoUrl\": \"https://i.pravatar.cc/100?img=1\",\n      \"notes\": \"Prefere silêncio nas manhãs.\",\n      \"rideType\": \"Casa → Trabalho\",\n      \"address\": \"Rua Vergueiro, 3185 - Vila Mariana, São Paulo - SP\",\n      \"mapsUrl\": \"https://www.google.com/maps/search/?api=1&query=Rua%20Vergueiro%2C%203185\"\n    },\n    {\n      \"id\": \"req_felipe\",\n      \"passengerName\": \"Felipe Rocha\",\n      \"time\": \"07:45\",\n      \"origin\": \"Pinheiros\",\n      \"destination\": \"Escritório HQ\",\n      \"photoUrl\": \"https://i.pravatar.cc/100?img=5\",\n      \"notes\": \"Aceita dividir pedágio.\",\n      \"rideType\": \"Trabalho → Casa\",\n      \"address\": \"Av. Brig. Faria Lima, 3477 - Itaim Bibi, São Paulo - SP\",\n      \"mapsUrl\": \"https://www.google.com/maps/search/?api=1&query=Av.%20Brig.%20Faria%20Lima%2C%203477\"\n    },\n    {\n      \"id\": \"req_larissa\",\n      \"passengerName\": \"Larissa Melo\",\n      \"time\": \"08:00\",\n      \"origin\": \"Mooca\",\n      \"destination\": \"Escritório HQ\",\n      \"photoUrl\": \"https://i.pravatar.cc/100?img=12\",\n      \"notes\": \"Leva café para compartilhar.\",\n      \"rideType\": \"Casa → Trabalho\",\n      \"address\": \"Rua da Mooca, 2500 - Mooca, São Paulo - SP\",\n      \"mapsUrl\": \"https://www.google.com/maps/search/?api=1&query=Rua%20da%20Mooca%2C%202500\"\n    }\n  ]\n}",
+          "latency": 250,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "a69d2f4e-1f10-48cc-9dea-2c89fdbb7f61",
+      "type": "http",
+      "documentation": "Confirma se o motorista aceitou ou rejeitou uma solicitação.",
+      "method": "post",
+      "endpoint": "motorista/solicitacoes/responder",
+      "responses": [
+        {
+          "uuid": "d57160fd-1b5b-4b66-9ffc-8d910e44374f",
+          "body": "{\n  \"message\": \"Resposta registrada com sucesso\"\n}",
+          "latency": 150,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "e5fb8666-6a7b-4a9f-9bb6-2bd41e96f55e",
+      "type": "http",
+      "documentation": "Retorna os bônus disponíveis para ativação do motorista.",
+      "method": "get",
+      "endpoint": "motorista/incentivos",
+      "responses": [
+        {
+          "uuid": "4700ec05-706e-4f80-8f31-0ae6b67e3fa9",
+          "body": "{\n  \"bonuses\": [\n    {\n      \"id\": \"fuel_vouchers\",\n      \"title\": \"Vouchers de combustível\",\n      \"description\": \"Receba créditos mensais para abastecer.\"\n    },\n    {\n      \"id\": \"mobility_credits\",\n      \"title\": \"Créditos em mobilidade urbana\",\n      \"description\": \"Troque quilômetros por viagens em apps parceiros.\"\n    },\n    {\n      \"id\": \"parking_spot\",\n      \"title\": \"Vaga preferencial no estacionamento\",\n      \"description\": \"Garanta agilidade nos dias de operação presencial.\"\n    },\n    {\n      \"id\": \"marketplace_rewards\",\n      \"title\": \"Recompensas em marketplace\",\n      \"description\": \"Ganhe descontos exclusivos em produtos corporativos.\"\n    }\n  ]\n}",
+          "latency": 100,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "d3cfbbf4-4fa1-481f-b3bc-1bb73a4e93fb",
+      "type": "http",
+      "documentation": "Recebe os dados de ativação do motorista.",
+      "method": "post",
+      "endpoint": "motorista/ativacao",
+      "responses": [
+        {
+          "uuid": "e4ef8f33-ea8b-4053-87af-4ea17a62bca6",
+          "body": "{\n  \"status\": \"sucesso\",\n  \"message\": \"Dados de ativação recebidos.\"\n}",
+          "latency": 200,
+          "statusCode": 201,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
     }
   ],
   "rootChildren": [
@@ -351,6 +475,22 @@
     {
       "type": "route",
       "uuid": "8dd88ab2-4c8f-4fe3-9cf9-49e9549f6b4c"
+    },
+    {
+      "type": "route",
+      "uuid": "2dbeaf19-86c0-4e36-9380-a4df01c4cbfb"
+    },
+    {
+      "type": "route",
+      "uuid": "a69d2f4e-1f10-48cc-9dea-2c89fdbb7f61"
+    },
+    {
+      "type": "route",
+      "uuid": "e5fb8666-6a7b-4a9f-9bb6-2bd41e96f55e"
+    },
+    {
+      "type": "route",
+      "uuid": "d3cfbbf4-4fa1-481f-b3bc-1bb73a4e93fb"
     }
   ],
   "proxyMode": false,
