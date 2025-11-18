@@ -1,5 +1,6 @@
 class AppRoutes {
-  static const onboarding = '/';
+  static const splash = '/';
+  static const onboarding = '/onboarding';
   static const auth = '/auth';
   static const profile = '/profile';
   static const driverActivation = '/driver-activation';

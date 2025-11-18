@@ -16,6 +16,7 @@ import 'screens/passenger/passenger_review_screen.dart';
 import 'screens/passenger/passenger_search_screen.dart';
 import 'screens/profile/profile_setup_screen.dart';
 import 'screens/settings/settings_screen.dart';
+import 'screens/splash/splash_screen.dart';
 
 void main() {
   runApp(const ShareRouteApp());
@@ -31,8 +32,9 @@ class ShareRouteApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'ShareRoute',
       theme: buildAppTheme(),
-      initialRoute: AppRoutes.onboarding,
+      initialRoute: AppRoutes.splash,
       routes: {
+        AppRoutes.splash: (context) => const SplashScreen(),
         AppRoutes.onboarding: (context) => const OnboardingScreen(),
         AppRoutes.auth: (context) => const AuthScreen(),
         AppRoutes.profile: (context) => const ProfileSetupScreen(),
