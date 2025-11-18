@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../../app_theme.dart';
 import '../../routes.dart';
+import '../../services/app_preferences.dart';
 import '../../widgets/highlight_chip.dart';
 
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({super.key});
+  const OnboardingScreen({super.key, this.isHelpFlow = false});
+
+  final bool isHelpFlow;
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -51,9 +54,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ),
   ];
 
-  void _onNext() {
+  Future<void> _onNext() async {
     if (_currentIndex == _slides.length - 1) {
-      Navigator.pushReplacementNamed(context, AppRoutes.auth);
+      await AppPreferences.setOnboardingCompleted();
+      if (!mounted) return;
+      if (widget.isHelpFlow) {
+        Navigator.of(context).pop();
+      } else {
+        Navigator.pushReplacementNamed(context, AppRoutes.auth);
+      }
     } else {
       _controller.nextPage(
         duration: const Duration(milliseconds: 300),
@@ -74,10 +83,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () => Navigator.pushReplacementNamed(
-                    context,
-                    AppRoutes.auth,
-                  ),
+                  onPressed: () {
+                    if (widget.isHelpFlow) {
+                      Navigator.pop(context);
+                    } else {
+                      Navigator.pushReplacementNamed(
+                        context,
+                        AppRoutes.auth,
+                      );
+                    }
+                  },
                   child: const Text('Pular'),
                 ),
               ),

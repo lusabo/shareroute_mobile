@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app_theme.dart';
 import '../../models/user_profile.dart';
 import '../../routes.dart';
+import '../../services/app_preferences.dart';
 import '../../services/profile_service.dart';
 import '../../widgets/section_header.dart';
 
@@ -186,6 +187,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         preferences,
         formasUso: formasUso,
       );
+      await AppPreferences.setProfileCompleted(true);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Preferências salvas com sucesso!')),
