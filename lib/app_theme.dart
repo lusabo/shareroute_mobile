@@ -14,7 +14,6 @@ class AppColors {
 ThemeData buildAppTheme() {
   final base = ThemeData.light();
   return base.copyWith(
-    useMaterial3: true,
     scaffoldBackgroundColor: AppColors.softWhite,
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.primaryBlue,
