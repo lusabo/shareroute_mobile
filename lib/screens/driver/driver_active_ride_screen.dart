@@ -128,6 +128,7 @@ class _DriverActiveRideScreenState extends State<DriverActiveRideScreen> {
         destination: destination,
         waypoints: ride.passengers.map((p) => p.address).toList(),
       );
+      debugPrint('URL da rota montada: $routeUrl');
       await _openMapsLink(routeUrl);
     } on PlatformException catch (error) {
       _showSnackBar(error.message ?? 'Falha ao abrir o Google Maps.');
