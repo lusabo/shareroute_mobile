@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../app_theme.dart';
 import '../../routes.dart';
+import '../../services/app_preferences.dart';
 import '../../services/auth_service.dart';
 
 enum _AuthStage { requestCode, verifyCode }
@@ -196,6 +197,8 @@ class _AuthScreenState extends State<AuthScreen> {
         code: code,
       );
       await _secureStorage.write(key: _tokenStorageKey, value: token);
+      final hasCompletedProfile =
+          await AppPreferences.hasCompletedProfileSetup();
       if (!mounted) return;
       setState(() {
         _isLoading = false;
@@ -204,7 +207,9 @@ class _AuthScreenState extends State<AuthScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Autenticação realizada com sucesso!')),
       );
-      Navigator.pushReplacementNamed(context, AppRoutes.profile);
+      final nextRoute =
+          hasCompletedProfile ? AppRoutes.home : AppRoutes.profile;
+      Navigator.pushReplacementNamed(context, nextRoute);
     } on AuthException catch (error) {
       if (!mounted) return;
       setState(() {

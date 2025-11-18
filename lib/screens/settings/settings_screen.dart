@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app_theme.dart';
+import '../../routes.dart';
 import '../../widgets/section_header.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -27,7 +28,8 @@ class SettingsScreen extends StatelessWidget {
                 title: const Text('Thiago Almeida'),
                 subtitle: const Text('Inovação • ShareRoute HQ'),
                 trailing: TextButton(
-                  onPressed: () {},
+                  onPressed: () =>
+                      Navigator.pushNamed(context, AppRoutes.profile),
                   child: const Text('Editar'),
                 ),
               ),
@@ -85,22 +87,28 @@ class SettingsScreen extends StatelessWidget {
             const SectionHeader(title: 'Ajuda e segurança'),
             Card(
               child: Column(
-                children: const [
-                  ListTile(
+                children: [
+                  const ListTile(
                     leading: Icon(Icons.shield_outlined),
                     title: Text('Central de segurança'),
                     subtitle: Text('Protocolos e contatos de emergência.'),
                     trailing: Icon(Icons.chevron_right),
                   ),
-                  Divider(height: 0),
+                  const Divider(height: 0),
                   ListTile(
-                    leading: Icon(Icons.help_outline),
-                    title: Text('Ajuda e FAQ'),
-                    subtitle: Text('Tire dúvidas sobre rotas e benefícios.'),
-                    trailing: Icon(Icons.chevron_right),
+                    leading: const Icon(Icons.help_outline),
+                    title: const Text('Ajuda e FAQ'),
+                    subtitle:
+                        const Text('Tire dúvidas sobre rotas e benefícios.'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => Navigator.pushNamed(
+                      context,
+                      AppRoutes.onboarding,
+                      arguments: true,
+                    ),
                   ),
-                  Divider(height: 0),
-                  ListTile(
+                  const Divider(height: 0),
+                  const ListTile(
                     leading: Icon(Icons.privacy_tip_outlined),
                     title: Text('Política de privacidade'),
                     trailing: Icon(Icons.chevron_right),

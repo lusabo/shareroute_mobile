@@ -35,7 +35,11 @@ class ShareRouteApp extends StatelessWidget {
       initialRoute: AppRoutes.splash,
       routes: {
         AppRoutes.splash: (context) => const SplashScreen(),
-        AppRoutes.onboarding: (context) => const OnboardingScreen(),
+        AppRoutes.onboarding: (context) {
+          final isHelpFlow =
+              ModalRoute.of(context)?.settings.arguments as bool? ?? false;
+          return OnboardingScreen(isHelpFlow: isHelpFlow);
+        },
         AppRoutes.auth: (context) => const AuthScreen(),
         AppRoutes.profile: (context) => const ProfileSetupScreen(),
         AppRoutes.driverActivation: (context) => const DriverActivationScreen(),

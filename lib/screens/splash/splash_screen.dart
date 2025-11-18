@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../routes.dart';
+import '../../services/app_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -17,9 +18,17 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    _scheduleNavigation();
+  }
+
+  Future<void> _scheduleNavigation() async {
+    final hasCompletedOnboarding =
+        await AppPreferences.hasCompletedOnboarding();
     _timer = Timer(const Duration(seconds: 2), () {
       if (!mounted) return;
-      Navigator.of(context).pushReplacementNamed(AppRoutes.onboarding);
+      final nextRoute =
+          hasCompletedOnboarding ? AppRoutes.auth : AppRoutes.onboarding;
+      Navigator.of(context).pushReplacementNamed(nextRoute);
     });
   }
 
