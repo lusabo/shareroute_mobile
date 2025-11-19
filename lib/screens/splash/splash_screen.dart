@@ -44,13 +44,23 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor: theme.colorScheme.primary,
       body: Center(
-        child: Text(
-          'ShareRoute',
-          style: theme.textTheme.displayMedium?.copyWith(
-            color: theme.colorScheme.onPrimary,
-            fontWeight: FontWeight.bold,
-          ),
-          textAlign: TextAlign.center,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              'assets/images/logo.png',
+              height: 120,
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'ShareRoute',
+              style: theme.textTheme.displayMedium?.copyWith(
+                color: theme.colorScheme.onPrimary,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );
